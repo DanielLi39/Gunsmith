@@ -3,6 +3,7 @@
 import GunSelection from "./components/GunSelection"
 import GunDisplay from "./components/GunDisplay";
 import AttachmentDisplay from "./components/AttachmentDisplay";
+import BuildSearch from "./components/BuildSearch";
 import { useState } from "react"
 import { queryGun } from "./server_actions/queryGun";
 
@@ -185,7 +186,7 @@ export default function Builder() {
                                 addAttachment={addAttachment} removeAttachment={removeAttachment} />
             </div>
         </div>
-        <div className="h-screen bg-neutral-900 text-white">Test</div>
+        <BuildSearch/>
         </>
     );
 }
