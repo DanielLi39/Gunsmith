@@ -7,7 +7,7 @@ import { useFormStatus } from "react-dom";
 export default function GunDisplay( {isOpen, gunName, baseName, attachmentList} ) {
     const display_details = 'grow';
     const attachmentNames = attachmentList.map(attachment => attachment.name);
-    const imagePath = `/guns/${gunName.replaceAll(' ', '_')}.png`;
+    const imagePath = `/guns/${gunName === '' ? 'blank' : gunName.replaceAll(' ', '_')}.png`;
     const input_details = `bg-stone-600 rounded-md min-w-72 text-pretty border-2 border-neutral-950 text-semibold text-red-100 placeholder-red-100
                            focus:text-neutral-800 focus:placeholder-neutral-800 focus:outline-none focus:bg-red-100`;
 

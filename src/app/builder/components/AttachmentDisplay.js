@@ -1,15 +1,8 @@
 'use client';
 
-import { useState, useRef, useEffect } from "react";
 import { guns } from "../server_actions/guns";
 
-export default function AttachmentDisplay( { gunName, blockList, data, addAttachment, removeAttachment, update, attachmentList} ) {
-  const oldUpdateRef = useRef(false);
-  var replace = oldUpdateRef.current !== update;
-  console.log(oldUpdateRef.current, update);
-  if (replace) {
-    oldUpdateRef.current = update;
-  }
+export default function AttachmentDisplay( { gunName, blockList, data, addAttachment, removeAttachment, attachmentList} ) {
   if (data !== null) {
     const entries = Object.entries(data);
     //THIS IS IMPORTANT - unique 'hash' function for the keys. 1000 is chosen so no guns will conflict
