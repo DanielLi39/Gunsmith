@@ -11,9 +11,9 @@ export default function Builder() {
     // data will hold the gun document data returned from the database
     const [data, setData] = useState(null);
     
-    //Reset will force the attachment categories to reset
-    //true/false will not hold any value, it is simply to force a re-render when it changes from true/false
-    const [reset, setReset] = useState(false);
+    //update will switch values when a gun is set to be loaded into the gunsmith
+    //true/false will have no value
+    const [update, setUpdate] = useState(false);
 
     // attachments will track the current attachments
     // each attachment will consist of {name: string, type: string, aftermarket: boolean}
@@ -22,6 +22,33 @@ export default function Builder() {
     // blocks will track the current blocked attachment categories
     // each block will be a string
     const [blocks, setBlocks] = useState([]);
+
+    async function loadGun(gunName, attachmentList) {
+        const result = await queryGun(gunName);
+
+        if (result.success) {
+            var blockList = [];
+            var newAttachments = [];
+            for (const key of Object.keys(result.data.attachments)) {
+                const exist = result.data.attachments[key].find(attachment => attachmentList.indexOf(attachment.name) > -1);
+                if (exist === undefined) {
+                    console.log(`Attachment could not be found in category ${key}`);
+                    continue;
+                }
+                newAttachments.push({name: exist.name, type: key, aftermarket: exist.aftermarket});
+                if (exist.blocking) {
+                    blockList = [...blockList, ...exist.blocks];
+                }
+            }
+            
+            setData(result.data);
+            setAttachments([...newAttachments]);
+            setBlocks([...blockList]);
+            setUpdate(true);
+        } else {
+            console.log(result.error);
+        }
+    }
 
     // Clear everything to initial state
     function resetAttachments(attachments) {
@@ -32,7 +59,6 @@ export default function Builder() {
                 newBlocks = newBlocks.concat(attachment.blocks);
             }
         }
-        setReset(!reset);
         setBlocks(newBlocks);
     }
 
@@ -179,14 +205,14 @@ export default function Builder() {
                     <GunSelection details="flex flex-col justify-center items-center" onSelection={receiveData} resetAttachments={resetAttachments}/>
                     <GunDisplay isOpen={data !== null} gunName={data === null ? '' : data.name} 
                                 baseName={data === null ? '' : (data.conversion ? data.base : data.name)} 
-                                attachmentList={attachments}/>  
+                                attachmentList={attachments} update={update}/>  
                 </div>
                 <AttachmentDisplay gunName={(data === null || data === undefined) ? null : data.name} 
                                    blockList={blocks} data={(data === null || data === undefined) ? null : data.attachments}
-                                addAttachment={addAttachment} removeAttachment={removeAttachment} />
+                                addAttachment={addAttachment} removeAttachment={removeAttachment} update={update} attachmentList={attachments}/>
             </div>
         </div>
-        <BuildSearch/>
+        <BuildSearch sendToGunsmith={loadGun}/>
         </>
     );
 }

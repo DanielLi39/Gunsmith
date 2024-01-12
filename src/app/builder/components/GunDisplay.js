@@ -10,7 +10,7 @@ export default function GunDisplay( {isOpen, gunName, baseName, attachmentList} 
     const imagePath = `/guns/${gunName.replaceAll(' ', '_')}.png`;
     const input_details = `bg-stone-600 rounded-md min-w-72 text-pretty border-2 border-neutral-950 text-semibold text-red-100 placeholder-red-100
                            focus:text-neutral-800 focus:placeholder-neutral-800 focus:outline-none focus:bg-red-100`;
-    
+
     return (
         <div className={`${display_details} ${isOpen ? '' : 'hidden'} justify-center`}>
             <div className="mt-5 flex flex-col items-center justify-center">
@@ -22,8 +22,8 @@ export default function GunDisplay( {isOpen, gunName, baseName, attachmentList} 
             <div className="mt-5">
                 <form className="flex flex-col justify-center items-center space-y-2" action={writeBuild}>
                     <div className="flex flex-row justify-center space-x-2">
-                        <input className={input_details} placeholder="Gun Build Name" name="name"></input>
-                        <input className={input_details} placeholder="Author" name="author"></input>
+                        <input className={input_details} placeholder="Gun Build Name" name="name"/>
+                        <input className={input_details} placeholder="Author" name="author"/>
                         <input type="hidden" name="gunName" value={baseName}/>
                         <input type="hidden" name="attachments" value={attachmentNames}/>
                     </div>
