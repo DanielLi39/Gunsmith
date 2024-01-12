@@ -7,16 +7,52 @@ import { queryGun } from "./actions/queryGun";
 
 export default function Builder() {
     // data will hold the gun document data returned from the database
+    /* data will hold the object: 
+    {
+        name: string,                       //Gun name
+        type: string,                       //Gun type
+        attachments: [
+            {'named type': [                //E.g. 'Muzzle', 'Barrel', etc.
+                {
+                    name: string,           //Attachment name
+                    blocking: boolean,      //Does attachment block other types?
+                    blocks?: [string]       //blocks is specified only when blocking is true
+                    aftermarket: boolean    //Is aftermarket part or not?
+                }
+            ]}
+        ],
+        conversion: boolean,                //Is it an aftermarket gun?
+        base?: string,                      //Base gun's name if it is an aftermarket gun, specified only if conversion is true
+        conversion_kit?: {                  //Conversion kit is specified only if conversion is true
+            name: string,                   //Aftermarket part name
+            blocking: boolean,              //Does attachment block other types?
+            blocks?: [string]               //'named types'
+            aftermarket: boolean            //Is it an aftermarket part?
+        }
+    }
+    */
     const [data, setData] = useState(null);
 
     // attachments will track the current attachments
-    // each attachment will consist of {name: string, type: string, aftermarket: boolean}
+    // each attachment will be an object with properties:
+    /*
+    {
+        name: string, 
+        type: string, 
+        aftermarket: boolean
+    }
+    */
     const [attachments, setAttachments] = useState([]);
 
     // blocks will track the current blocked attachment categories
-    // each block will be a string
+    // blocks is an array of strings, where each string corresponds to one blocked type
     const [blocks, setBlocks] = useState([]);
 
+    /*
+     * loadGun will update the data, attachments, and blocks states to reflect a preloaded gun
+     * @param gunName - The gun's name
+     * @param attachmentList - The attachment list to load
+    */
     async function loadGun(gunName, attachmentList) {
         const result = await queryGun(gunName);
 
@@ -43,7 +79,35 @@ export default function Builder() {
         }
     }
 
-    // Clear everything to initial state
+    /*
+     * Wrapper function around queryGun to handle receiving the gun specifications from the database
+     * @param gun - name of gun to look up
+    */
+    async function receiveData(gun) {
+        if (gun === null) {
+            //console.log("Gun name is null");
+            setData(null);
+        } else {
+            const result = await queryGun(gun.name);
+            
+            if (result.success) {
+                console.log(result);
+                setData(result.data);
+                if (result.data.conversion) {
+                    resetAttachments([result.data.conversion_kit]);
+                } else {
+                    resetAttachments([]);
+                }
+            } else {
+                console.log(result);
+            }
+        }
+    }
+
+    /*
+     * resetAttachments will reset attachments to the initial state of the gun
+     * @param attachments - list of attachments to reset to
+    */
     function resetAttachments(attachments) {
         setAttachments([...attachments]);
         var newBlocks = [];
@@ -163,28 +227,6 @@ export default function Builder() {
         }
         console.log(newBlocks);
         setBlocks(newBlocks);
-    }
-
-    //Fix this to have proper error handling later
-    async function receiveData(gun) {
-        if (gun === null) {
-            //console.log("Gun name is null");
-            setData(null);
-        } else {
-            const result = await queryGun(gun['name']);
-            
-            if (result.success) {
-                console.log(result);
-                setData(result.data);
-                if (result.data.conversion) {
-                    resetAttachments([result.data.conversion_kit]);
-                } else {
-                    resetAttachments([]);
-                }
-            } else {
-                console.log(result);
-            }
-        }
     }
     
     return (
