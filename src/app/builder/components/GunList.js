@@ -1,6 +1,6 @@
 'use client';
 
-import { guns } from "../server_actions/guns";
+import { guns } from "../actions/guns";
 
 export default function GunList( {isOpen, curQuery, selectOption} ) {
     function filterGuns() {

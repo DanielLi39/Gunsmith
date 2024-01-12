@@ -1,6 +1,6 @@
 'use client';
 
-import { guns } from "../server_actions/guns";
+import { guns } from "../actions/guns";
 
 export default function AttachmentDisplay( { gunName, blockList, data, addAttachment, removeAttachment, attachmentList} ) {
   if (data !== null) {

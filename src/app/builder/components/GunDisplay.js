@@ -1,7 +1,7 @@
 'use client';
 
 import Image from "next/image";
-import writeBuild from "../server_actions/writeBuild";
+import writeBuild from "../actions/writeBuild";
 import { useFormStatus } from "react-dom";
 
 export default function GunDisplay( {isOpen, gunName, baseName, attachmentList} ) {
