@@ -11,7 +11,6 @@ export default function AttachmentDisplay( { gunName, blockList, data, addAttach
     //but they will destroy and recreate themselves when the gun selected changes
     //It is guaranteed that the index will not change over the lifetime of these components (since it comes from the database)
     const id = guns.find((gun) => gun.name === gunName).id;
-    console.log(attachmentList);
     return (
         <div className="flex flex-row justify-between items-center bg-neutral-900 h-1/6">
             {entries.map((entry, index) => {
@@ -33,9 +32,7 @@ export default function AttachmentDisplay( { gunName, blockList, data, addAttach
 }
 
 function AttachmentCategory( {name, items, isBlocked, addAttachment, removeAttachment, first, last, attachmentList} ) {
-  console.log(`Is ${name}?`);
-  console.log(attachmentList);
-  var selection = attachmentList.find(attachment => {console.log(attachment); return attachment.type === name});
+  var selection = attachmentList.find(attachment => attachment.type === name);
   
   if (selection === undefined) {
     selection = name;
@@ -43,14 +40,16 @@ function AttachmentCategory( {name, items, isBlocked, addAttachment, removeAttac
     selection = selection.name;
   }
 
+  //Wrapper function to addAttachment
+  //For some reason this lets the category update, so do not touch... even though addAttachment is more than enough
+  //Unsure why category will not update without this
   function selectAttachment(attachment) {
-    //Add the attachment to the attachment list
-    //Update the state to display the attachment name in the box
     if (addAttachment(attachment, name)) {
-      console.log(`${attachment.name}, previous state: ${selection}`);
+      console.log(`${name} is now ${attachment.name}, previous state: ${selection}`);
     }
   }
   
+  //Wrapper function to ensure right argument passed to removeAttachment
   function deleteAttachment(attachmentName) {
     var attachment = null;
     for (const item of items) {

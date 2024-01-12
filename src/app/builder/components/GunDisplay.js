@@ -38,6 +38,10 @@ export default function GunDisplay( {isOpen, gunName, baseName, attachmentList} 
 }
 
 function AttachmentCounter( {attachmentList} ) {
+    //Algorithm to sort attachment list:
+    //Fill up the given attachmentList with nulls until the length of array is 5
+    //Sort the array such that aftermarket parts are first, normal parts are second, and null parts are third
+    //Map the appropriate image for each part so that the attachment counter appears sorted in the website (similar to the real gunsmith)
     const modifiableAttachmentList = [...attachmentList];
     for (let i = modifiableAttachmentList.length; i < 5; i++) {
         modifiableAttachmentList.push({name: null});
