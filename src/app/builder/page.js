@@ -1,12 +1,9 @@
 'use client';
 
-import GunSelection from "./components/GunSelection"
-import GunDisplay from "./components/GunDisplay";
-import AttachmentDisplay from "./components/AttachmentDisplay";
 import BuildList from "./components/BuildList";
 import GunBuilder from "./components/GunBuilder";
 import { useState } from "react"
-import { queryGun } from "./server_actions/queryGun";
+import { queryGun } from "./actions/queryGun";
 
 export default function Builder() {
     // data will hold the gun document data returned from the database

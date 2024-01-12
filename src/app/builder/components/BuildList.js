@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from "react";
-import queryBuilds from "../server_actions/queryBuilds";
-import deleteBuild from "../server_actions/deleteBuild";
+import queryBuilds from "../actions/queryBuilds";
+import deleteBuild from "../actions/deleteBuild";
 
 export default function BuildList( {sendToGunsmith} ) {
     const [builds, setBuilds] = useState([]);
