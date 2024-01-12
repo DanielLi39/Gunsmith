@@ -1,9 +1,15 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { guns } from "../server_actions/guns";
 
-export default function AttachmentDisplay( { gunName, blockList, data, addAttachment, removeAttachment} ) {
+export default function AttachmentDisplay( { gunName, blockList, data, addAttachment, removeAttachment, update, attachmentList} ) {
+  const oldUpdateRef = useRef(false);
+  var replace = oldUpdateRef.current !== update;
+  console.log(oldUpdateRef.current, update);
+  if (replace) {
+    oldUpdateRef.current = update;
+  }
   if (data !== null) {
     const entries = Object.entries(data);
     //THIS IS IMPORTANT - unique 'hash' function for the keys. 1000 is chosen so no guns will conflict
@@ -12,13 +18,16 @@ export default function AttachmentDisplay( { gunName, blockList, data, addAttach
     //but they will destroy and recreate themselves when the gun selected changes
     //It is guaranteed that the index will not change over the lifetime of these components (since it comes from the database)
     const id = guns.find((gun) => gun.name === gunName).id;
+    console.log(attachmentList);
     return (
         <div className="flex flex-row justify-between items-center bg-neutral-900 h-1/6">
             {entries.map((entry, index) => {
                 return (
-                    <AttachmentCategory name={entry[0]} items={entry[1]} key={(1000 * id) + index} first={index === 0} last={index === entries.length - 1}
+                    <AttachmentCategory name={entry[0]} items={entry[1]} key={(1000 * id) + index} 
+                                        first={index === 0} last={index === entries.length - 1}
                                         isBlocked={blockList.indexOf(entry[0]) > -1}
-                                        addAttachment={addAttachment} removeAttachment={removeAttachment}/>
+                                        addAttachment={addAttachment} removeAttachment={removeAttachment} 
+                                        attachmentList={attachmentList}/>
                 );
             })}
         </div>
@@ -30,15 +39,22 @@ export default function AttachmentDisplay( { gunName, blockList, data, addAttach
   }
 }
 
-function AttachmentCategory( {name, items, isBlocked, addAttachment, removeAttachment, first, last} ) {
-  const [selection, setSelection] = useState(name);
+function AttachmentCategory( {name, items, isBlocked, addAttachment, removeAttachment, first, last, attachmentList} ) {
+  console.log(`Is ${name}?`);
+  console.log(attachmentList);
+  var selection = attachmentList.find(attachment => {console.log(attachment); return attachment.type === name});
+  
+  if (selection === undefined) {
+    selection = name;
+  } else {
+    selection = selection.name;
+  }
 
   function selectAttachment(attachment) {
     //Add the attachment to the attachment list
     //Update the state to display the attachment name in the box
     if (addAttachment(attachment, name)) {
       console.log(`${attachment.name}, previous state: ${selection}`);
-      setSelection(attachment.name);
     }
   }
   
@@ -54,7 +70,6 @@ function AttachmentCategory( {name, items, isBlocked, addAttachment, removeAttac
       return;
     }
     removeAttachment(attachment);
-    setSelection(name);
   }
 
   //This is run during rendering to position the dropup div so that it does not overflow out of the screen
