@@ -3,17 +3,14 @@
 import GunSelection from "./components/GunSelection"
 import GunDisplay from "./components/GunDisplay";
 import AttachmentDisplay from "./components/AttachmentDisplay";
-import BuildSearch from "./components/BuildSearch";
+import BuildList from "./components/BuildList";
+import GunBuilder from "./components/GunBuilder";
 import { useState } from "react"
 import { queryGun } from "./server_actions/queryGun";
 
 export default function Builder() {
     // data will hold the gun document data returned from the database
     const [data, setData] = useState(null);
-    
-    //update will switch values when a gun is set to be loaded into the gunsmith
-    //true/false will have no value
-    const [update, setUpdate] = useState(false);
 
     // attachments will track the current attachments
     // each attachment will consist of {name: string, type: string, aftermarket: boolean}
@@ -44,7 +41,6 @@ export default function Builder() {
             setData(result.data);
             setAttachments([...newAttachments]);
             setBlocks([...blockList]);
-            setUpdate(true);
         } else {
             console.log(result.error);
         }
@@ -193,26 +189,13 @@ export default function Builder() {
             }
         }
     }
-
-    const background_details = "flex flex-col bg-gradient-to-t from-neutral-900 via-80% via-neutral-700 to-red-800 h-5/6";
-
+    
     return (
         <>
-        <div className="h-[48rem] overflow-hidden">
-            <div className="h-full">
-                <div className={background_details}>
-                    <h1 className="text-center py-3 text-xl text-neutral-950 font-bold underline">Call of Duty: Modern Warfare 3 Gunsmith</h1>
-                    <GunSelection details="flex flex-col justify-center items-center" onSelection={receiveData} resetAttachments={resetAttachments}/>
-                    <GunDisplay isOpen={data !== null} gunName={data === null ? '' : data.name} 
-                                baseName={data === null ? '' : (data.conversion ? data.base : data.name)} 
-                                attachmentList={attachments} update={update}/>  
-                </div>
-                <AttachmentDisplay gunName={(data === null || data === undefined) ? null : data.name} 
-                                   blockList={blocks} data={(data === null || data === undefined) ? null : data.attachments}
-                                addAttachment={addAttachment} removeAttachment={removeAttachment} update={update} attachmentList={attachments}/>
-            </div>
-        </div>
-        <BuildSearch sendToGunsmith={loadGun}/>
+        <GunBuilder data={data} attachments={attachments} blocks={blocks} 
+                    receiveData={receiveData} resetAttachments={resetAttachments}
+                    addAttachment={addAttachment} removeAttachment={removeAttachment}/>
+        <BuildList sendToGunsmith={loadGun}/>
         </>
     );
 }
