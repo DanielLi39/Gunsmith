@@ -8,8 +8,7 @@ const nextConfig = {
                 permanent: true,
             },
         ]
-    },
-    output: "export"
+    }
 }
 
 module.exports = nextConfig
