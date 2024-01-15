@@ -1,4 +1,5 @@
-import NavBar from "../components/NavBar";
+import LoginForm from "../components/LoginForm";
+import RegisterForm from "../components/RegisterForm";
 
 function Header({title}) {
   return <h1>{title}</h1>;
@@ -7,7 +8,9 @@ function Header({title}) {
 export default function Home() {
   return (
     <>
-    <Header title='What the zuck'/>
+    <Header title="World's worst login ever"/>
+    <LoginForm/>
+    <RegisterForm/>
     </>
   )
 }
