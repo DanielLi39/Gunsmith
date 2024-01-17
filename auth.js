@@ -16,9 +16,7 @@ async function getUser(username) {
 
     try {
         await client.connect();
-
         const user = await client.db("mw3_gunbuilds").collection("users").findOne( {username: username} );
-
         return user;
     } catch (error) {
         console.log("Failed to fetch user:", error);
@@ -36,8 +34,6 @@ export const { auth, signIn, signOut } = NextAuth({
                 const { username, password } = credentials;
                 const user = await getUser(username);
                 if (!user) return null;
-
-                console.log(user);
                 
                 const passwordsMatch = await bcrypt.compare(password, user.password);
                 if (passwordsMatch) return user;

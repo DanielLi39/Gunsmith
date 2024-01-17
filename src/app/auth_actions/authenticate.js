@@ -3,9 +3,15 @@
 import { signIn } from "../../../auth";
 import { AuthError } from "next-auth";
 
-export async function authenticate(prevState, formData) {
+export async function authenticate(formData) {
     try {
-        await signIn('credentials', formData);
+        const creds = {
+            username: formData.get("username"),
+            password: formData.get("password")
+        }
+        
+        await signIn('credentials', creds);
+        
     } catch (error) {
         if (error instanceof AuthError) {
             switch (error.type) {
