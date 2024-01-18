@@ -9,6 +9,7 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "@clerk/clerk-js": "^4.68.5",
         "mongodb": "^6.3.0",
         "next": "14.0.4",
         "next-auth": "^5.0.0-beta.4",
