@@ -1,8 +1,0 @@
-0000000000000000000000000000000000000000 79e527c5524e0ac7e8cc30e2e21f2667fd9aa1d4 Daniel Li <daniel39@illinois.edu> 1704945338 -0600	commit (initial): I should've done this a long time ago
-79e527c5524e0ac7e8cc30e2e21f2667fd9aa1d4 79e527c5524e0ac7e8cc30e2e21f2667fd9aa1d4 Daniel Li <daniel39@illinois.edu> 1704945484 -0600	Branch: renamed refs/heads/master to refs/heads/main
-79e527c5524e0ac7e8cc30e2e21f2667fd9aa1d4 8a10302fb771270d48f4510600697f475ccaee4c Daniel Li <daniel39@illinois.edu> 1704952669 -0600	commit: Test dev branch
-8a10302fb771270d48f4510600697f475ccaee4c 79e527c5524e0ac7e8cc30e2e21f2667fd9aa1d4 Daniel Li <daniel39@illinois.edu> 1704953291 -0600	reset: moving to HEAD~1
-79e527c5524e0ac7e8cc30e2e21f2667fd9aa1d4 485aadc31c8040dc78da31c2a8a9731caa543bd1 Daniel Li <daniel39@illinois.edu> 1705171065 -0600	commit: Testing export in next.config.js
-485aadc31c8040dc78da31c2a8a9731caa543bd1 dfa5f9d06b6bec2972ad5d916c86a2ee60f00350 Daniel Li <daniel39@illinois.edu> 1705171245 -0600	pull origin main (finish): refs/heads/main onto 1139d1975b4c2c8e962964b80f44584fe26f271b
-dfa5f9d06b6bec2972ad5d916c86a2ee60f00350 bbe6b142c09aae588474e59a9cd80ab94d5ee95c Daniel Li <daniel39@illinois.edu> 1705171408 -0600	commit: Yeah that didn't work scrapping that
-bbe6b142c09aae588474e59a9cd80ab94d5ee95c cf7ff078652122ab056fca8678552da095e42224 Daniel Li <daniel39@illinois.edu> 1705634113 -0600	pull: Fast-forward
