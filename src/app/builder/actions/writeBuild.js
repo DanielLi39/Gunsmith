@@ -54,20 +54,15 @@ async function connect(data) {
 
 export default async function writeBuild( formData ) {
     const data = [];
-    var first = true;
+    console.log(formData);
     for (const pair of formData.entries()) {
-        if (!first) {
-            if (pair[0] === 'attachments') {
-                if (pair[1] === '') {
-                    data.push([pair[0], []]);
-                } else {
-                    data.push([pair[0], pair[1].split(',')]);
-                }
-            } else {
-                data.push([pair[0], pair[1]]);
-            }
+        console.log(pair);
+        if (pair[0] === 'attachments') {
+            (pair[1] === '') ? data.push([pair[0], []]) : data.push([pair[0], pair[1].split(',')]);
+        } else if (pair[0] === 'camo' && pair[1] === '') {
+            data.push([pair[0], 'None']);
         } else {
-            first = false;
+            data.push([pair[0], pair[1]]);
         }
     }
     const result = await connect(Object.fromEntries(data));

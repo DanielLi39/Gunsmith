@@ -3,14 +3,17 @@
 import { useState } from "react";
 import queryBuilds from "../actions/queryBuilds";
 import deleteBuild from "../actions/deleteBuild";
+import { useUser } from "@clerk/nextjs";
 
 export default function BuildList( {sendToGunsmith} ) {
     const [builds, setBuilds] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
+    const { user } = useUser();
 
     async function receiveCursor() {
         //Change later
-        const result = await queryBuilds('Lexwomy');
+        console.log(user.username);
+        const result = await queryBuilds(user.username);
         console.log(result);
         if (result.success) {
             setBuilds(result.data);
@@ -36,6 +39,7 @@ export default function BuildList( {sendToGunsmith} ) {
                         <td>Created By</td>
                         <td>Name</td>
                         <td>Gun</td>
+                        <td>Camo</td>
                         <td>Attachments</td>
                     </tr>
                 </thead>
@@ -47,6 +51,7 @@ export default function BuildList( {sendToGunsmith} ) {
                                 <td>{build.author}</td>
                                 <td>{build.name}</td>
                                 <td>{build.gunName}</td>
+                                <td>{build.camo}</td>
                                 <td colSpan="5">{build.attachments.toString()}</td>
                                 <td className="cursor-pointer" onClick={() => sendToGunsmith(build.gunName, build.attachments)}>Load</td>
                                 <td className="cursor-pointer" onClick={() => deleteItem(build._id)}>Delete</td>
