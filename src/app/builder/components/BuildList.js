@@ -23,8 +23,10 @@ export default function BuildList( {sendToGunsmith} ) {
         }
     }
 
-    async function buildQuery() {
-
+    async function buildQuery(formData) {
+        for (const pair of formData.entries()) {
+            console.log(pair);
+        }
     }
 
     //Load all builds associated with this account
@@ -65,7 +67,7 @@ export default function BuildList( {sendToGunsmith} ) {
                     <tbody>
                         <tr className="border-2 border-white">
                             <td colSpan="7">
-                                <div className="h-[500px] block overflow-y-auto overflow-x-clip bg-neutral-700">
+                                <div className="h-[500px] block overflow-y-auto overflow-x-auto bg-neutral-700">
                                     <table>
                                         <tbody>
                                             {builds.map(build => {
@@ -96,12 +98,24 @@ export default function BuildList( {sendToGunsmith} ) {
 }
 
 function QueryBuilder( {buildQuery, loadAccountBuilds} ) {
+    const [queries, setQueries] = useState([]);
+
+    function addParameter() {
+        const buildForm = document.getElementById("buildForm");
+        const newInput = document.createElement("input")
+        buildForm.appendChild()
+    }
     return (
         <div className="flex flex-col justify-center items-center">
-            <form action={buildQuery} className="flex flex-col justify-center">
-                <input type="text"/>
-                <button type="submit">Find builds</button>
+            <button type="button" onClick={addParameter}>Add Parameter</button>
+            <form action={buildQuery} className="table justify-center w-[400px]" id="buildForm">
+                <div className="table-row w-[400px]">
+                    <label htmlFor="gunName" className="w-[100px] table-cell">Gun name:</label>
+                    <input type="text" name="gunName" placeholder="Leave blank to exclude from search" className="w-[300px] table-cell"/>
+                </div>
             </form>
+            <button type="submit" form="buildForm" disabled={queries.length === 1}>Find builds</button>
+            <p>Or...</p>
             <button type="button" onClick={loadAccountBuilds}>Display saved builds</button>
         </div>
     );
