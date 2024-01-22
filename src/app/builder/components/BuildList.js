@@ -23,6 +23,19 @@ export default function BuildList( {sendToGunsmith} ) {
         }
     }
 
+    async function buildQuery() {
+
+    }
+
+    //Load all builds associated with this account
+    async function loadAccountBuilds() {
+        const result = await queryBuilds(user.username);
+        if (result.success) {
+            setBuilds(result.data);
+            setIsOpen(true);
+        }
+    }
+
     async function deleteItem(id) {
         const result = await deleteBuild(id);
         console.log(result);
@@ -35,18 +48,16 @@ export default function BuildList( {sendToGunsmith} ) {
 
     return (
         <div className="h-screen bg-gradient-to-b from-neutral-900 via-neutral-800 via-60% to-red-800 text-white">
-            <div className="pt-5 overflow-clip">
-                <input type="text"/>
-                <button type="button" onClick={receiveCursor}>Load builds</button>
-                
-                <table className={`${isOpen ? '' : 'hidden'}`}>
+            <div className="pt-5 overflow-clip flex flex-col justify-center">
+                <QueryBuilder buildQuery={buildQuery} loadAccountBuilds={loadAccountBuilds}/>
+                <table className={`${!isOpen && 'hidden'} w-[1075px] m-auto`}>
                     <thead>
                         <tr className="py-2 border-2 border-white bg-neutral-700">
                             <td className="w-[100px]">Created By</td>
-                            <td className="w-[100px] bg-neutral-500"> Name</td>
-                            <td className="w-[100px]"> Gun</td>
-                            <td className="w-[100px] bg-neutral-500"> Camo</td>
-                            <td className="w-[500px]"> Attachments</td>
+                            <td className="w-[100px] bg-neutral-500">Name</td>
+                            <td className="w-[100px]">Gun</td>
+                            <td className="w-[100px] bg-neutral-500">Camo</td>
+                            <td className="w-[500px]">Attachments</td>
                             <td className="w-[75px] bg-neutral-500"></td>
                             <td className="w-[100px] bg-neutral-400"></td>
                         </tr>
@@ -80,6 +91,18 @@ export default function BuildList( {sendToGunsmith} ) {
                     </tbody>
                 </table>
             </div>
+        </div>
+    );
+}
+
+function QueryBuilder( {buildQuery, loadAccountBuilds} ) {
+    return (
+        <div className="flex flex-col justify-center items-center">
+            <form action={buildQuery} className="flex flex-col justify-center">
+                <input type="text"/>
+                <button type="submit">Find builds</button>
+            </form>
+            <button type="button" onClick={loadAccountBuilds}>Display saved builds</button>
         </div>
     );
 }
