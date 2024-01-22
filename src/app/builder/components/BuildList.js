@@ -72,13 +72,13 @@ export default function BuildList( {sendToGunsmith} ) {
                                                 return (
                                                     <tr key={build._id}
                                                         >
-                                                        <td className="w-[100px]">{build.author}</td>
+                                                        <td className="w-[97px]">{build.author}</td>
                                                         <td className="w-[100px] bg-neutral-500">{build.name}</td>
                                                         <td className="w-[100px]">{build.gunName}</td>
                                                         <td className="w-[100px] bg-neutral-500">{build.camo}</td>
-                                                        <td className="w-[500px]">{build.attachments.toString()}</td>
+                                                        <td className="w-[499px]">{build.attachments.toString()}</td>
                                                         <td className="cursor-pointer w-[75px] bg-neutral-500" onClick={() => sendToGunsmith(build.gunName, build.attachments)}>Load</td>
-                                                        <td className="cursor-pointer w-[75px] bg-neutral-400" onClick={() => deleteItem(build._id)}>Delete</td>
+                                                        <td className="cursor-pointer w-[80px] bg-neutral-400" onClick={() => deleteItem(build._id)}>Delete</td>
                                                     </tr>
                                                 );
                                             })}
