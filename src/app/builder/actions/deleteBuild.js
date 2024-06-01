@@ -4,7 +4,7 @@ import { MongoClient, ObjectId } from "mongodb";
 import { ServerApiVersion } from "mongodb";
 
 async function deleteId(client, id) {
-    const objId = new ObjectId(id);
+    const objId = ObjectId.createFromHexString(id);
     const result = await client.db("mw3_gunbuilds").collection("builds").deleteOne( {_id: objId} );
     console.log(result);
     return result;
