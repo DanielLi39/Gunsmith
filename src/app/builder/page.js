@@ -3,7 +3,7 @@
 import BuildList from "./components/BuildList";
 import GunBuilder from "./components/GunBuilder";
 import { useState } from "react"
-import { queryGun } from "./actions/queryGun";
+import loadGun from "./actions/loadGun";
 
 export default function Builder() {
     // data will hold the gun document data returned from the database
@@ -49,12 +49,12 @@ export default function Builder() {
     const [blocks, setBlocks] = useState([]);
 
     /*
-     * loadGun will update the data, attachments, and blocks states to reflect a preloaded gun
+     * queryGun will update the data, attachments, and blocks states to reflect a preloaded gun
      * @param gunName - The gun's name
      * @param attachmentList - The attachment list to load
     */
-    async function loadGun(gunName, attachmentList) {
-        const result = await queryGun(gunName);
+    async function queryGun(gunName, attachmentList) {
+        const result = await loadGun(gunName);
 
         if (result.success) {
             var blockList = [];
@@ -80,7 +80,7 @@ export default function Builder() {
     }
 
     /*
-     * Wrapper function around queryGun to handle receiving the gun specifications from the database
+     * Wrapper function around loadGun to handle receiving the gun specifications from the database
      * @param gun - name of gun to look up
     */
     async function receiveData(gun) {
@@ -88,7 +88,7 @@ export default function Builder() {
             //console.log("Gun name is null");
             setData(null);
         } else {
-            const result = await queryGun(gun.name);
+            const result = await loadGun(gun.name);
             
             if (result.success) {
                 console.log(result);
@@ -234,7 +234,7 @@ export default function Builder() {
         <GunBuilder data={data} attachments={attachments} blocks={blocks} 
                     receiveData={receiveData} resetAttachments={resetAttachments}
                     addAttachment={addAttachment} removeAttachment={removeAttachment}/>
-        <BuildList sendToGunsmith={loadGun}/>
+        <BuildList sendToGunsmith={queryGun}/>
         </>
     );
 }

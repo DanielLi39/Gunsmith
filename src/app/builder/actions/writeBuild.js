@@ -1,16 +1,11 @@
 'use server';
 
-import { MongoClient } from "mongodb";
-import { ServerApiVersion } from "mongodb";
+//import { MongoClient } from "mongodb";
+//import { ServerApiVersion } from "mongodb";
 
-async function writeData(client, data) {
-    console.log(data);
-    
-    const result = await client.db("mw3_gunbuilds").collection('builds').insertOne(data);
-    console.log(result);
-    return result;
-}
+import connect from "./connect";
 
+/*
 async function connect(data) {
     const client = new MongoClient(process.env.MONGODB_URI, {
         serverApi: {
@@ -51,7 +46,7 @@ async function connect(data) {
     const result = await run(data);
     return result;
 }
-
+*/
 export default async function writeBuild( formData ) {
     const data = [];
     var first = true;
@@ -70,7 +65,28 @@ export default async function writeBuild( formData ) {
             first = false;
         }
     }
-    const result = await connect(Object.fromEntries(data));
+    const result = await connect(_writeBuild, Object.fromEntries(data), resultHandler, false);
 
     return result;
+}
+
+async function _writeBuild(client, data) {
+    console.log(data);
+    
+    const result = await client.db("mw3_gunbuilds").collection('builds').insertOne(data);
+    console.log(result);
+    return result;
+}
+
+async function resultHandler(result) {
+    if (result.acknowledged !== true) {
+        return {
+            success: false,
+            error: "Something went wrong..."
+        };
+    }
+
+    return {
+        success: true
+    };
 }

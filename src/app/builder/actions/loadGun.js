@@ -1,15 +1,11 @@
 'use server';
 
-import { MongoClient } from "mongodb";
-import { ServerApiVersion } from "mongodb";
+//import { MongoClient } from "mongodb";
+//import { ServerApiVersion } from "mongodb";
 
-async function readData(client, gunName) {
-    const result = await client.db("mw3_gunbuilds").collection("guns").findOne( {name: gunName}, { projection: {_id: 0}});
+import connect from "./connect";
 
-    console.log(result);
-    return result;
-}
-
+/*
 async function connect(query) {
     const client = new MongoClient(process.env.MONGODB_URI, {
         serverApi: {
@@ -51,8 +47,30 @@ async function connect(query) {
     const result = await run(query);
     return result;
 }
+*/
 
-export async function queryGun(gunName) {
-    const result = await connect(gunName); 
+export default async function loadGun(gunName) {
+    const result = await connect(_loadGun, gunName, resultHandler, false); 
     return result;
+}
+
+async function _loadGun(client, gunName) {
+    const result = await client.db("mw3_gunbuilds").collection("guns").findOne( {name: gunName}, { projection: {_id: 0}});
+
+    console.log(result);
+    return result;
+}
+
+async function resultHandler(result) {
+    if (result === null) {
+        return {
+            success: false,
+            error: "No such gun found."
+        };
+    }
+
+    return {
+        success: true,
+        data: result
+    };
 }

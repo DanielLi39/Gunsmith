@@ -1,23 +1,28 @@
 'use client';
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import queryBuilds from "../actions/queryBuilds";
 import deleteBuild from "../actions/deleteBuild";
 
 export default function BuildList( {sendToGunsmith} ) {
+    //The author will be inherited from a context once logged in - TODO
+    const initialParameters = {author: 'dummy', name: '', gun: '', attachments: '', all: true};
     const [builds, setBuilds] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
-    //The author will be inherited from a context once logged in
-    const [parameters, setParameters] = useState({author: 'dummy', name: '', gun: '', attachments: ''});
+    
+    const [parameters, setParameters] = useState(initialParameters);
 
     async function searchBuild() {
-        var attachmentList = [];
-        var words = parameters.attachments.split(',');
-        if (parameters.attachments !== '') {
-            words.forEach((val) => attachmentList.push(val.trim()));
+        const result = await queryBuilds(parameters);
+        console.log(result);
+        if (result.success) {
+            setBuilds(result.data);
+            setIsOpen(true);
         }
-        console.log(parameters.attachments, attachmentList);
-        const result = await queryBuilds(parameters.author, parameters.name, parameters.gun, attachmentList);
+    }
+
+    async function listBuild() {
+        const result = await queryBuilds(initialParameters);
         console.log(result);
         if (result.success) {
             setBuilds(result.data);
@@ -37,9 +42,7 @@ export default function BuildList( {sendToGunsmith} ) {
     //Advanced search: Search by user, by name, by gun, by attachment list
     return (
         <div className="h-screen bg-neutral-900 text-white">
-            <SearchUI parameters={parameters} setParameters={setParameters}/>
-            <div>{parameters.author}</div>
-            <button type="button" onClick={() => searchBuild()}>Search builds</button>
+            <SearchUI parameters={parameters} setParameters={setParameters} searchBuild={searchBuild} listBuild={listBuild}/> 
             <table className={`${isOpen ? '' : 'hidden'}`}>
                 <thead>
                     <tr className="py-2 border-2 border-white">
@@ -70,8 +73,7 @@ export default function BuildList( {sendToGunsmith} ) {
     );
 }
 
-function SearchUI( {parameters, setParameters} ) {
-
+function SearchUI( {parameters, setParameters, searchBuild, listBuild} ) {
     //SearchType is true to search for custom builds, false to search in established gun list
     const [searchType, setSearchType] = useState(true);
 
@@ -86,10 +88,10 @@ function SearchUI( {parameters, setParameters} ) {
                 <input className="text-black" value={parameters.name} onChange={(e) => setParameters({...parameters, name: e.target.value})}/>
                 <input className="text-black" value={parameters.gun} onChange={(e) => setParameters({...parameters, gun: e.target.value})}/>
                 <input className="text-black" value={parameters.attachments} onChange={(e) => setParameters({...parameters, attachments: e.target.value})}/>
-                <p>Attachments</p>
-                <div id="attachmentList">
-
-                </div>
+                <input type="checkbox" checked={parameters.all} onChange={(e) => setParameters({...parameters, all: e.target.checked})}/>
+                <button type="button" onClick={() => searchBuild()}>Search builds</button>
+                <button type="button" onClick={() => listBuild()}>List own builds</button>
+                <button type="button" onClick={() => setParameters(initialParameters)}>Reset search</button>
             </div>
             <div className={`${searchType ? 'hidden' : 'block'}`}>
                 Wtf

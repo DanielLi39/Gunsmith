@@ -1,15 +1,10 @@
 'use server';
 
-import { MongoClient, ObjectId } from "mongodb";
-import { ServerApiVersion } from "mongodb";
+import { ObjectId } from "mongodb";
+//import { ServerApiVersion } from "mongodb";
+import connect from "./connect";
 
-async function deleteId(client, id) {
-    const objId = ObjectId.createFromHexString(id);
-    const result = await client.db("mw3_gunbuilds").collection("builds").deleteOne( {_id: objId} );
-    console.log(result);
-    return result;
-}
-
+/*
 async function connect(query) {
     const client = new MongoClient(process.env.MONGODB_URI, {
         serverApi: {
@@ -52,8 +47,30 @@ async function connect(query) {
     const result = await run(query);
     return result;
 }
+*/
 
 export default async function deleteBuild(id) {
-    const result = await connect(id);
+    const result = await connect(_deleteBuild, id, resultHandler, false);
     return result;
+}
+
+async function _deleteBuild(client, id) {
+    const objId = ObjectId.createFromHexString(id);
+    const result = await client.db("mw3_gunbuilds").collection("builds").deleteOne( {_id: objId} );
+    console.log(result);
+    return result;
+}
+
+async function resultHandler(result) {
+    if (!result.acknowledged) {
+        return {
+            success: false,
+            error: "No such gun found."
+        };
+    }
+
+    return {
+        success: true,
+        data: result.deletedCount
+    };
 }
