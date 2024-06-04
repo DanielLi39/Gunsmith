@@ -77,16 +77,16 @@ export default async function queryBuilds(parameters) {
 async function _queryBuilds(client, parameters) {
     console.log(parameters);
     var attachmentList = [];
-    if (parameters.attachments !== '') {
-        parameters.attachments.split(',').forEach((val) => attachmentList.push(val.trim()));
+    if (parameters.build.attachments !== '') {
+        parameters.build.attachments.split(',').forEach((val) => attachmentList.push(val.trim()));
     }
     const query = {};
 
-    (parameters.author !== '') ? (query.author = parameters.author) : "";
-    (parameters.name !== '') ? (query.name = parameters.name) : "";
-    (parameters.gun !== '') ? (query.gunName = parameters.gun) : "";
+    (parameters.build.author !== '') ? (query.author = parameters.build.author) : "";
+    (parameters.build.name !== '') ? (query.name = parameters.build.name) : "";
+    (parameters.build.gun !== '') ? (query.gunName = parameters.build.gun) : "";
     (attachmentList.length !== 0) ? 
-        (parameters.all ? (query.attachments = { $all: attachmentList }) : (query.attachments = { $in: attachmentList }))
+        (parameters.build.all ? (query.attachments = { $all: attachmentList }) : (query.attachments = { $in: attachmentList }))
         : "";
 
     console.log(query);

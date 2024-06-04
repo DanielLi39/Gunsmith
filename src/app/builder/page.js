@@ -26,9 +26,14 @@ export default function Builder() {
         conversion_kit?: {                  //Conversion kit is specified only if conversion is true
             name: string,                   //Aftermarket part name
             blocking: boolean,              //Does attachment block other types?
-            blocks?: [string]               //'named types'
+            blocks?: [string]               //What types are blocked?
             aftermarket: boolean            //Is it an aftermarket part?
-        }
+        },
+        aftermarkets?: {                    //Base gun only - specifies the aftermarket kits available to the base gun
+            conversion_kit: string          //A map linking the aftermarket names to the full name (e.g. JAK Harbinger -> JAK Harbinger M4)
+        },
+        actions: [string],                  //Array of fire actions available to the gun
+        caliber: [string]                   //Array of calibers available to the gun
     }
     */
     const [data, setData] = useState(null);
