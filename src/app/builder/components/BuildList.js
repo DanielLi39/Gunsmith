@@ -71,77 +71,30 @@ export default function BuildList( {sendToGunsmith} ) {
         }
     }
 
+    const option_details = "text-black";
+    const build_table_details = "w-[1500px] table-fixed border-collapse border-2 border-white mx-auto";
+    const gun_table_details = "w-[1000px] table-fixed border-collapse border-2 border-white mx-auto";
+    const table_cell_details = "border-2 border-white p-2 text-left";
     //Default search: Return all builds made by user
     //Advanced search: Search by user, by name, by gun, by attachment list
     return (
-        <div className="h-screen bg-neutral-900 text-white">
-            <SearchUI parameters={parameters} setParameters={setParameters} searchBuild={searchBuild} listBuild={listBuild} searchGun={searchGun} 
-                      initialParameters={initialParameters} searchType={searchType} setSearchType={setSearchType}/> 
-            <table className={`${(isOpen && searchType) ? '' : 'hidden'}`}>
-                <thead>
-                    <tr className="py-2 border-2 border-white">
-                        <td>Created By</td>
-                        <td>Name</td>
-                        <td>Gun</td>
-                        <td>Attachments</td>
-                    </tr>
-                </thead>
-                <tbody className="">
-                    {builds.map(build => {
-                        return (
-                            <tr key={build._id}
-                                className="py-2 border-2 border-white">
-                                <td>{build.author}</td>
-                                <td>{build.name}</td>
-                                <td>{build.gunName}</td>
-                                <td colSpan="5">{build.attachments.toString()}</td>
-                                <td className="cursor-pointer" onClick={() => sendToGunsmith(build.gunName, build.attachments)}>Load</td>
-                                <td className="cursor-pointer" onClick={() => deleteItem(build._id)}>Delete</td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
-            <table className={`${(isOpen && !searchType) ? '' : 'hidden'}`}>
-                <thead>
-                    <tr className="py-2 border-2 border-white">
-                        <td>Gun name</td>
-                        <td>Type</td>
-                        <td>Actions</td>
-                        <td>Caliber</td>
-                        <td>Display Gun</td>
-                    </tr>
-                </thead>
-                <tbody className="">
-                    {builds.map(build => {
-                        return (
-                            <tr key={build._id}
-                                className="py-2 border-2 border-white">
-                                <td>{build.name}</td>
-                                <td>{build.type}</td>
-                                <td>{build.actions?.join(', ').trim()}</td>
-                                <td>{build.caliber?.join(', ').trim()}</td>
-                                <td className="cursor-pointer" onClick={() => sendToGunsmith(build.gunName, build.attachments)}>Load</td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
-        </div>
-    );
-}
-
-function SearchUI( {parameters, setParameters, searchBuild, listBuild, searchGun, initialParameters, searchType, setSearchType} ) {
-    return (
-        <div>
-            <div>
+        <div className="flex flex-col justify-items-center h-screen bg-neutral-900 text-white">
+            <div className="flex flex-row justify-center">
                 <button onClick={() => {
+                    if (!searchType) {
+                        setBuilds([]);
+                    }
                     setSearchType(true);
                     setParameters(initialParameters);
+                    setIsOpen(false);
                     }}>Custom Builds</button>
                 <button onClick={() => {
+                    if (searchType) {
+                        setBuilds([]);
+                    }
                     setSearchType(false);
                     setParameters(initialParameters);
+                    setIsOpen(false);
                     }}>Guns</button>
             </div>
             <div className={`${searchType ? 'block' : 'hidden'}`}>
@@ -166,6 +119,108 @@ function SearchUI( {parameters, setParameters, searchBuild, listBuild, searchGun
                 <button type="button" onClick={() => searchGun()}>Search Guns</button>
                 <button type="button" onClick={() => setParameters(initialParameters)}>Reset search</button>
             </div>
+            <div className="w-full overflow-x-auto">
+                <table className={`${(isOpen && searchType) ? '' : 'hidden'} ${build_table_details}`}>
+                    <thead>
+                        <tr className="">
+                            <td className={`${table_cell_details} w-[150px]`}>Created By</td>
+                            <td className={`${table_cell_details} w-[225px]`}>Name</td>
+                            <td className={`${table_cell_details} w-[150px]`}>Gun</td>
+                            <td className={`${table_cell_details} w-[802px]`}>Attachments</td>
+                            <td className={`${table_cell_details} w-[75px]`}>Click to load</td>
+                            <td className={`${table_cell_details} w-[96px]`}>Click to delete build</td>
+                        </tr>
+                    </thead>
+                    <tbody className="">
+                        <tr>
+                            <td colSpan='6'>
+                                <div className="block overflow-y-scroll h-96">
+                                    <table className="w-[1477px] table-fixed">
+                                    <thead>
+                                        <tr className="">
+                                            <td className={`w-[147px]`}></td>
+                                            <td className={`w-[225px]`}></td>
+                                            <td className={`w-[150px]`}></td>
+                                            <td className={`w-[801px]`}></td>
+                                            <td className={`w-[75px]`}></td>
+                                            <td className={`w-[76px]`}></td>
+                                        </tr>
+                                    </thead>
+                                        <tbody>
+                                        {(searchType) ? builds.map(build => {
+                                            return (
+                                                <tr key={build._id}
+                                                    className="">
+                                                    <td className={`${table_cell_details}`}>{build.author}</td>
+                                                    <td className={`${table_cell_details}`}>{build.name}</td>
+                                                    <td className={`${table_cell_details}`}>{build.gunName}</td>
+                                                    <td className={`${table_cell_details}`}>{build.attachments?.join(', ').trim()}</td>
+                                                    <td className={`${table_cell_details} cursor-pointer`} onClick={() => sendToGunsmith(build.gunName, build.attachments)}>Load</td>
+                                                    <td className={`${table_cell_details} cursor-pointer`} onClick={() => deleteItem(build._id)}>Delete</td>
+                                                </tr>
+                                            );
+                                        }) : ''}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table className={`${(isOpen && !searchType) ? '' : 'hidden'} ${gun_table_details}`}>
+                    <thead>
+                        <tr className="py-2 border-2 border-white">
+                            <td className={`${table_cell_details} w-[150px]`}>Gun name</td>
+                            <td className={`${table_cell_details} w-[100px]`}>Type</td>
+                            <td className={`${table_cell_details} w-[200px]`}>Actions</td>
+                            <td className={`${table_cell_details} w-[200px]`}>Caliber</td>
+                            <td className={`${table_cell_details} w-[350px]`}>Display Gun</td>
+                        </tr>
+                    </thead>
+                    <tbody className="">
+                        <tr>
+                            <td colSpan='5'>
+                                <div className="block overflow-y-scroll h-96">
+                                    <table className="w-[977px] table-fixed">
+                                        <thead>
+                                            <td className='w-[147px]'></td>
+                                            <td className='w-[100px]'></td>
+                                            <td className='w-[200px]'></td>
+                                            <td className='w-[200px]'></td>
+                                            <td className='w-[330px]'></td>
+                                        </thead>
+                                        <tbody>
+                                        {(!searchType) ? builds.map(build => {
+                                            return (
+                                                <tr key={build._id}
+                                                    className="py-2 border-2 border-white">
+                                                    <td className={`${table_cell_details}`}>{build.name}</td>
+                                                    <td className={`${table_cell_details}`}>{build.type}</td>
+                                                    <td className={`${table_cell_details}`}>{build.actions?.join(', ').trim()}</td>
+                                                    <td className={`${table_cell_details}`}>{build.caliber?.join(', ').trim()}</td>
+                                                    <td className={`${table_cell_details} cursor-pointer`}>
+                                                        <select className="text-black w-full" onChange={(evt) => {(evt.target.value !== "Select gun") ? sendToGunsmith(evt.target.value, []) : ''}}>
+                                                            <option className={option_details} value={"Select gun"}>Select gun</option>
+                                                            <option className={option_details} value={build.name}>{build.name}</option>
+                                                            {(build.hasOwnProperty('aftermarkets')) ? 
+                                                            (build.aftermarkets.map((aftermarket, index) => {
+                                                                return (
+                                                                    <option className={option_details} key={index} value={aftermarket}>{aftermarket}</option>
+                                                                );
+                                                            })) : ""}
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        }) : ''}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    )
+    );
 }
