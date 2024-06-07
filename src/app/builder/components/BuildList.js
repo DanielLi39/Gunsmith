@@ -97,17 +97,21 @@ export default function BuildList( {sendToGunsmith} ) {
                     setIsOpen(false);
                     }}>Guns</button>
             </div>
-            <div className={`${searchType ? 'block' : 'hidden'}`}>
-                <input className="text-black" value={parameters.build.author} onChange={(e) => setParameters({...parameters, build: {...parameters.build, author: e.target.value}})}/>
-                <input className="text-black" value={parameters.build.name} onChange={(e) => setParameters({...parameters, build: {...parameters.build, name: e.target.value}})}/>
-                <input className="text-black" value={parameters.build.gun} onChange={(e) => setParameters({...parameters, build: {...parameters.build, gun: e.target.value}})}/>
-                <input className="text-black" value={parameters.build.attachments} onChange={(e) => setParameters({...parameters, build: {...parameters.build, attachments: e.target.value}})}/>
-                <input type="checkbox" checked={parameters.build.all} onChange={(e) => setParameters({...parameters, build: {...parameters.build, all: e.target.checked}})}/>
-                <button type="button" onClick={() => searchBuild()}>Search builds</button>
-                <button type="button" onClick={() => listBuild()}>List own builds</button>
-                <button type="button" onClick={() => setParameters(initialParameters)}>Reset search</button>
+            <div className={`${searchType ? 'grid grid-cols-2 grid-rows-4' : 'hidden'}`}>
+                <input className="text-black col-start-1 col-end-1" value={parameters.build.author} onChange={(e) => setParameters({...parameters, build: {...parameters.build, author: e.target.value}})}/>
+                <input className="text-black col-start-1 col-end-1" value={parameters.build.name} onChange={(e) => setParameters({...parameters, build: {...parameters.build, name: e.target.value}})}/>
+                <input className="text-black col-start-1 col-end-1" value={parameters.build.gun} onChange={(e) => setParameters({...parameters, build: {...parameters.build, gun: e.target.value}})}/>
+                <div className="col-start-2 col-end-2 row-start-1 row-span-3">
+                    <textarea className="text-black h-full w-full text-wrap" value={parameters.build.attachments} onChange={(e) => setParameters({...parameters, build: {...parameters.build, attachments: e.target.value}})}/>
+                </div>
+                <div className="col-start-1 col-end-2 row-start-4 row-end-4">
+                    <button type="button" onClick={() => searchBuild()}>Search builds</button>
+                    <button type="button" onClick={() => listBuild()}>List own builds</button>
+                    <button type="button" onClick={() => setParameters(initialParameters)}>Reset search</button>
+                    <input type="checkbox" checked={parameters.build.all} onChange={(e) => setParameters({...parameters, build: {...parameters.build, all: e.target.checked}})}/>
+                </div>
             </div>
-            <div className={`${searchType ? 'hidden' : 'block'}`}>
+            <div className={`${searchType ? 'hidden' : 'grid'}`}>
                 <input className="text-black" value={parameters.gun.name} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, name: e.target.value}})}/>
                 <input className="text-black" value={parameters.gun.type} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, type: e.target.value}})}/>
                 <input className="text-black" value={parameters.gun.attachments} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, attachments: e.target.value}})}/>
