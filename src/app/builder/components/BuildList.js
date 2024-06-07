@@ -123,12 +123,12 @@ export default function BuildList( {sendToGunsmith} ) {
                 <table className={`${(isOpen && searchType) ? '' : 'hidden'} ${build_table_details}`}>
                     <thead>
                         <tr className="">
-                            <td className={`${table_cell_details} w-[150px]`}>Created By</td>
-                            <td className={`${table_cell_details} w-[225px]`}>Name</td>
-                            <td className={`${table_cell_details} w-[150px]`}>Gun</td>
-                            <td className={`${table_cell_details} w-[802px]`}>Attachments</td>
-                            <td className={`${table_cell_details} w-[75px]`}>Click to load</td>
-                            <td className={`${table_cell_details} w-[96px]`}>Click to delete build</td>
+                            <th className={`${table_cell_details} w-[150px]`}>Created By</th>
+                            <th className={`${table_cell_details} w-[225px]`}>Name</th>
+                            <th className={`${table_cell_details} w-[150px]`}>Gun</th>
+                            <th className={`${table_cell_details} w-[802px]`}>Attachments</th>
+                            <th className={`${table_cell_details} w-[75px]`}>Click to load</th>
+                            <th className={`${table_cell_details} w-[96px]`}>Click to delete build</th>
                         </tr>
                     </thead>
                     <tbody className="">
@@ -138,12 +138,12 @@ export default function BuildList( {sendToGunsmith} ) {
                                     <table className="w-[1477px] table-fixed">
                                     <thead>
                                         <tr className="">
-                                            <td className={`w-[147px]`}></td>
-                                            <td className={`w-[225px]`}></td>
-                                            <td className={`w-[150px]`}></td>
-                                            <td className={`w-[801px]`}></td>
-                                            <td className={`w-[75px]`}></td>
-                                            <td className={`w-[76px]`}></td>
+                                            <th className={`w-[147px]`}></th>
+                                            <th className={`w-[225px]`}></th>
+                                            <th className={`w-[150px]`}></th>
+                                            <th className={`w-[801px]`}></th>
+                                            <th className={`w-[75px]`}></th>
+                                            <th className={`w-[76px]`}></th>
                                         </tr>
                                     </thead>
                                         <tbody>
@@ -170,11 +170,11 @@ export default function BuildList( {sendToGunsmith} ) {
                 <table className={`${(isOpen && !searchType) ? '' : 'hidden'} ${gun_table_details}`}>
                     <thead>
                         <tr className="py-2 border-2 border-white">
-                            <td className={`${table_cell_details} w-[150px]`}>Gun name</td>
-                            <td className={`${table_cell_details} w-[100px]`}>Type</td>
-                            <td className={`${table_cell_details} w-[200px]`}>Actions</td>
-                            <td className={`${table_cell_details} w-[200px]`}>Caliber</td>
-                            <td className={`${table_cell_details} w-[350px]`}>Display Gun</td>
+                            <th className={`${table_cell_details} w-[150px]`}>Gun name</th>
+                            <th className={`${table_cell_details} w-[100px]`}>Type</th>
+                            <th className={`${table_cell_details} w-[200px]`}>Actions</th>
+                            <th className={`${table_cell_details} w-[200px]`}>Caliber</th>
+                            <th className={`${table_cell_details} w-[350px]`}>Display Gun</th>
                         </tr>
                     </thead>
                     <tbody className="">
@@ -183,11 +183,13 @@ export default function BuildList( {sendToGunsmith} ) {
                                 <div className="block overflow-y-scroll h-96">
                                     <table className="w-[977px] table-fixed">
                                         <thead>
-                                            <td className='w-[147px]'></td>
-                                            <td className='w-[100px]'></td>
-                                            <td className='w-[200px]'></td>
-                                            <td className='w-[200px]'></td>
-                                            <td className='w-[330px]'></td>
+                                            <tr>
+                                                <th className='w-[147px]'></th>
+                                                <th className='w-[100px]'></th>
+                                                <th className='w-[200px]'></th>
+                                                <th className='w-[200px]'></th>
+                                                <th className='w-[330px]'></th>
+                                            </tr>
                                         </thead>
                                         <tbody>
                                         {(!searchType) ? builds.map(build => {
