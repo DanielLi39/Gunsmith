@@ -195,7 +195,7 @@ export default function BuildList( {sendToGunsmith} ) {
                                         </tr>
                                     </thead>
                                         <tbody>
-                                        {(searchType) ? builds.map(build => {
+                                        {(searchType) && builds.map(build => {
                                             return (
                                                 <tr key={build._id}
                                                     className="">
@@ -207,7 +207,7 @@ export default function BuildList( {sendToGunsmith} ) {
                                                     <td className={`${table_cell_details} cursor-pointer`} onClick={() => deleteItem(build._id)}>Delete</td>
                                                 </tr>
                                             );
-                                        }) : ''}
+                                        })}
                                         </tbody>
                                     </table>
                                 </div>
@@ -240,7 +240,7 @@ export default function BuildList( {sendToGunsmith} ) {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                        {(!searchType) ? builds.map(build => {
+                                        {(!searchType) && builds.map(build => {
                                             return (
                                                 <tr key={build._id}
                                                     className="py-2 border-2 border-white">
@@ -252,17 +252,17 @@ export default function BuildList( {sendToGunsmith} ) {
                                                         <select className="text-black w-full" onChange={(evt) => {(evt.target.value !== "Select gun") ? sendToGunsmith(evt.target.value, []) : ''}}>
                                                             <option className={option_details} value={"Select gun"}>Select gun</option>
                                                             <option className={option_details} value={build.name}>{build.name}</option>
-                                                            {(build.hasOwnProperty('aftermarkets')) ? 
+                                                            {(build.hasOwnProperty('aftermarkets')) &&
                                                             (build.aftermarkets.map((aftermarket, index) => {
                                                                 return (
                                                                     <option className={option_details} key={index} value={aftermarket}>{aftermarket}</option>
                                                                 );
-                                                            })) : ""}
+                                                            }))}
                                                         </select>
                                                     </td>
                                                 </tr>
                                             );
-                                        }) : ''}
+                                        })}
                                         </tbody>
                                     </table>
                                 </div>
