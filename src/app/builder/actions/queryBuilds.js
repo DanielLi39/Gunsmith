@@ -81,7 +81,8 @@ async function _queryBuilds(client, parameters) {
         parameters.build.attachments.split(',').forEach((val) => attachmentList.push(val.trim()));
     }
     const query = {};
-
+    (parameters.show_private) ? '' : query.public = true;
+    
     (parameters.build.author !== '') ? (query.author = parameters.build.author) : "";
     (parameters.build.name !== '') ? (query.name = parameters.build.name) : "";
     (parameters.build.gun !== '') ? (query.gunName = parameters.build.gun) : "";

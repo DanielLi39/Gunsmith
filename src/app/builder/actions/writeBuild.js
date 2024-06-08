@@ -58,6 +58,8 @@ export default async function writeBuild( formData ) {
                 } else {
                     data.push([pair[0], pair[1].split(',')]);
                 }
+            } else if (pair[0] === 'public') {
+                data.push([pair[0], (pair[1] === 'on' ? true : false)])
             } else {
                 data.push([pair[0], pair[1]]);
             }

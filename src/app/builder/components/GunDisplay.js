@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import writeBuild from "../actions/writeBuild";
-import { useFormStatus } from "react-dom";
 
+//TO-DO Replace Author field as it should be inherited from context once logged in
 export default function GunDisplay( {isOpen, gunName, baseName, attachmentList} ) {
     const display_details = 'grow';
     const attachmentNames = attachmentList.map(attachment => attachment.name);
@@ -27,6 +27,10 @@ export default function GunDisplay( {isOpen, gunName, baseName, attachmentList} 
                         <input type="hidden" name="gunName" value={baseName}/>
                         <input type="hidden" name="attachments" value={attachmentNames}/>
                     </div>
+                    <label className="text-red-100 flex flex-row items-center">
+                            Save as public build:
+                            <input type="checkbox" name="public"/>
+                        </label>
                     <button type="submit" 
                             className="rounded-md py-1 px-3 bg-red-800/75 border-2 border-white w-32 text-red-100 text-semibold">
                         Save Build

@@ -15,7 +15,8 @@ export default function BuildList( {sendToGunsmith} ) {
             name: '', 
             gun: '', 
             attachments: '', 
-            all: true
+            all: true,
+            show_private: false
         },
         gun: 
         {
@@ -46,7 +47,9 @@ export default function BuildList( {sendToGunsmith} ) {
     }
 
     async function listBuild() {
-        const result = await queryBuilds(initialParameters);
+        const list_own = structuredClone(initialParameters);
+        list_own.show_private = true;
+        const result = await queryBuilds(list_own);
         console.log(result);
         if (result.success) {
             setBuilds(result.data);
@@ -118,7 +121,7 @@ export default function BuildList( {sendToGunsmith} ) {
                     <textarea className={`${build_input_details} h-full w-full text-wrap`} value={parameters.build.attachments} onChange={(e) => setParameters({...parameters, build: {...parameters.build, attachments: e.target.value}})}/>
                 </label>
                 <div className="flex flex-row justify-center col-start-1 col-end-3 row-start-4 row-end-4">
-                    <button type="button" onClick={() => searchBuild()}>Search builds</button>
+                    <button type="button" onClick={() => searchBuild()}>Search public builds</button>
                     <button type="button" onClick={() => listBuild()}>List own builds</button>
                     <button type="button" onClick={() => setParameters(initialParameters)}>Reset search</button>
                     <label className="flex flex-row items-center">
@@ -130,23 +133,23 @@ export default function BuildList( {sendToGunsmith} ) {
             <div className={`${searchType ? 'hidden' : 'grid grid-cols-2 mx-auto'}`}>
                 <label className="flex flex-col col-start-1">
                     Name
-                    <input className="text-black" value={parameters.gun.name} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, name: e.target.value}})}/>
+                    <input className={build_input_details} value={parameters.gun.name} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, name: e.target.value}})}/>
                 </label>
                 <label className="flex flex-col col-start-2">
                     Type
-                    <input className="text-black" value={parameters.gun.type} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, type: e.target.value}})}/>
+                    <input className={build_input_details} value={parameters.gun.type} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, type: e.target.value}})}/>
                 </label>
                 <label className="flex flex-col col-start-2 row-start-2">
                     Attachments (comma separated):
-                    <textarea className="text-black" value={parameters.gun.attachments} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, attachments: e.target.value}})}/>
+                    <textarea className={build_input_details} value={parameters.gun.attachments} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, attachments: e.target.value}})}/>
                 </label>
                 <label className="flex flex-col col-start-1 row-start-2">
                     Fire action
-                    <textarea className="text-black" value={parameters.gun.action} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, action: e.target.value}})}/>
+                    <textarea className={build_input_details} value={parameters.gun.action} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, action: e.target.value}})}/>
                 </label>
                 <label className="flex flex-col col-start-1 row-start-3">
                     Caliber
-                    <textarea className="text-black" value={parameters.gun.caliber} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, caliber: e.target.value}})}/>
+                    <textarea className={build_input_details} value={parameters.gun.caliber} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, caliber: e.target.value}})}/>
                 </label>
                 <div className="grid grid-cols-2 grid-rows-2 col-start-2 row-start-3">
                     <label className="flex flex-row items-center justify-center">
