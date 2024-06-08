@@ -75,6 +75,7 @@ export default function BuildList( {sendToGunsmith} ) {
     const build_table_details = "w-[1500px] table-fixed border-collapse border-2 border-white mx-auto";
     const gun_table_details = "w-[1000px] table-fixed border-collapse border-2 border-white mx-auto";
     const table_cell_details = "border-2 border-white p-2 text-left";
+    const build_input_details = "text-black";
     //Default search: Return all builds made by user
     //Advanced search: Search by user, by name, by gun, by attachment list
     return (
@@ -97,31 +98,74 @@ export default function BuildList( {sendToGunsmith} ) {
                     setIsOpen(false);
                     }}>Guns</button>
             </div>
-            <div className={`${searchType ? 'grid grid-cols-2 grid-rows-4' : 'hidden'}`}>
-                <input className="text-black col-start-1 col-end-1" value={parameters.build.author} onChange={(e) => setParameters({...parameters, build: {...parameters.build, author: e.target.value}})}/>
-                <input className="text-black col-start-1 col-end-1" value={parameters.build.name} onChange={(e) => setParameters({...parameters, build: {...parameters.build, name: e.target.value}})}/>
-                <input className="text-black col-start-1 col-end-1" value={parameters.build.gun} onChange={(e) => setParameters({...parameters, build: {...parameters.build, gun: e.target.value}})}/>
-                <div className="col-start-2 col-end-2 row-start-1 row-span-3">
-                    <textarea className="text-black h-full w-full text-wrap" value={parameters.build.attachments} onChange={(e) => setParameters({...parameters, build: {...parameters.build, attachments: e.target.value}})}/>
-                </div>
-                <div className="col-start-1 col-end-2 row-start-4 row-end-4">
+            <div className={`${searchType ? 'grid grid-cols-2 grid-rows-4 mx-auto' : 'hidden'}`}>
+                <label className="flex flex-col col-start-1 col-end-1">
+                    Author
+                    <input className={build_input_details} value={parameters.build.author} 
+                        onChange={(e) => setParameters({...parameters, build: {...parameters.build, author: e.target.value}})}/>
+                </label>
+                <label className="flex flex-col col-start-1 col-end-1">
+                    Name
+                    <input className={build_input_details} value={parameters.build.name} onChange={(e) => setParameters({...parameters, build: {...parameters.build, name: e.target.value}})}/>
+                </label>
+                <label className="flex flex-col col-start-1 col-end-1">
+                    Gun
+                    <input className={build_input_details} value={parameters.build.gun} onChange={(e) => setParameters({...parameters, build: {...parameters.build, gun: e.target.value}})}/>
+                </label>
+                
+                <label className="flex flex-col col-start-2 col-end-2 row-start-1 row-span-3">
+                    Attachments (comma separated):
+                    <textarea className={`${build_input_details} h-full w-full text-wrap`} value={parameters.build.attachments} onChange={(e) => setParameters({...parameters, build: {...parameters.build, attachments: e.target.value}})}/>
+                </label>
+                <div className="flex flex-row justify-center col-start-1 col-end-3 row-start-4 row-end-4">
                     <button type="button" onClick={() => searchBuild()}>Search builds</button>
                     <button type="button" onClick={() => listBuild()}>List own builds</button>
                     <button type="button" onClick={() => setParameters(initialParameters)}>Reset search</button>
-                    <input type="checkbox" checked={parameters.build.all} onChange={(e) => setParameters({...parameters, build: {...parameters.build, all: e.target.checked}})}/>
+                    <label className="flex flex-row items-center">
+                        Match all attachments:
+                        <input type="checkbox" checked={parameters.build.all} onChange={(e) => setParameters({...parameters, build: {...parameters.build, all: e.target.checked}})}/>
+                    </label>
                 </div>
             </div>
-            <div className={`${searchType ? 'hidden' : 'grid'}`}>
-                <input className="text-black" value={parameters.gun.name} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, name: e.target.value}})}/>
-                <input className="text-black" value={parameters.gun.type} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, type: e.target.value}})}/>
-                <input className="text-black" value={parameters.gun.attachments} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, attachments: e.target.value}})}/>
-                <input className="text-black" value={parameters.gun.action} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, action: e.target.value}})}/>
-                <input className="text-black" value={parameters.gun.caliber} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, caliber: e.target.value}})}/>
-                <input type="checkbox" checked={parameters.gun.attachments_all} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, attachments_all: e.target.checked}})}/>
-                <input type="checkbox" checked={parameters.gun.action_all} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, action_all: e.target.checked}})}/>
-                <input type="checkbox" checked={parameters.gun.caliber_all} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, caliber_all: e.target.checked}})}/>
-                <button type="button" onClick={() => searchGun()}>Search Guns</button>
-                <button type="button" onClick={() => setParameters(initialParameters)}>Reset search</button>
+            <div className={`${searchType ? 'hidden' : 'grid grid-cols-2 mx-auto'}`}>
+                <label className="flex flex-col col-start-1">
+                    Name
+                    <input className="text-black" value={parameters.gun.name} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, name: e.target.value}})}/>
+                </label>
+                <label className="flex flex-col col-start-2">
+                    Type
+                    <input className="text-black" value={parameters.gun.type} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, type: e.target.value}})}/>
+                </label>
+                <label className="flex flex-col col-start-2 row-start-2">
+                    Attachments (comma separated):
+                    <textarea className="text-black" value={parameters.gun.attachments} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, attachments: e.target.value}})}/>
+                </label>
+                <label className="flex flex-col col-start-1 row-start-2">
+                    Fire action
+                    <textarea className="text-black" value={parameters.gun.action} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, action: e.target.value}})}/>
+                </label>
+                <label className="flex flex-col col-start-1 row-start-3">
+                    Caliber
+                    <textarea className="text-black" value={parameters.gun.caliber} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, caliber: e.target.value}})}/>
+                </label>
+                <div className="grid grid-cols-2 grid-rows-2 col-start-2 row-start-3">
+                    <label className="flex flex-row items-center justify-center">
+                        Match all attachments:
+                        <input type="checkbox" checked={parameters.gun.attachments_all} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, attachments_all: e.target.checked}})}/>
+                    </label>
+                    <label className="flex flex-row items-center justify-center">
+                        Match all fire actions:
+                        <input type="checkbox" checked={parameters.gun.action_all} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, action_all: e.target.checked}})}/>
+                    </label>
+                    <label className="col-start-1 col-end-3 flex flex-row justify-center items-center">
+                        Match all calibers:
+                        <input type="checkbox" checked={parameters.gun.caliber_all} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, caliber_all: e.target.checked}})}/>
+                    </label>
+                </div>
+                <div className="flex flex-row justify-center col-start-1 col-end-3">
+                    <button type="button" onClick={() => searchGun()}>Search Guns</button>
+                    <button type="button" onClick={() => setParameters(initialParameters)}>Reset search</button>
+                </div>
             </div>
             <div className="w-full overflow-x-auto">
                 <table className={`${(isOpen && searchType) ? '' : 'hidden'} ${build_table_details}`}>
