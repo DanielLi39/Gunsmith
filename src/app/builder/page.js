@@ -65,6 +65,7 @@ export default function Builder() {
         name: '',
         author: '',
         gunName: '',
+        base: undefined,
         attachments: [],
         blocks: [],
         edit: false,
@@ -99,6 +100,7 @@ export default function Builder() {
                 gunName: gunName,
                 attachments: [...newAttachments],
                 blocks: [...blockList],
+                base: result.data.conversion ? result.data.base : undefined,
                 edit: false,
                 public: false
             });
@@ -140,6 +142,7 @@ export default function Builder() {
                 name: build.name,
                 author: build.author,
                 gunName: build.gunName,
+                base: result.data.conversion ? result.data.base : undefined,
                 attachments: [...newAttachments],
                 blocks: [...blockList],
                 edit: true,
@@ -170,8 +173,9 @@ export default function Builder() {
                 console.log(result);
                 setData(result.data);
                 setParameters({...parameters, 
-                    gunName: (result.data.conversion ? result.data.base : result.data.name),
-                    attachments: (result.data.conversion) ? [result.data.conversion_kit.name] : [],
+                    gunName: result.data.name,
+                    base: (result.data.conversion ? result.data.base : undefined),
+                    attachments: (result.data.conversion) ? [result.data.conversion_kit] : [],
                     blocks: newBlocks
                 });
             } else {
@@ -212,15 +216,17 @@ export default function Builder() {
     function addAttachment (newAttachment, attachmentType) {
         //Check if the attachment list is full, if the current block list would not permit the new attachment,
         //or if any current attachments would be blocked by the new attachment's block list
-        if (parameters.attachments.length == 5 || parameters.blocks.indexOf(attachmentType) > -1) {
+        //Replace the current type attachment with the new one if there is one
+        const typeIndex = parameters.attachments.findIndex((element) => element.type === attachmentType);
+
+        if ((typeIndex == -1 && parameters.attachments.length == 5) || parameters.blocks.indexOf(attachmentType) > -1) {
             console.log("Attachment list full or a current attachment would be blocked!");
             //Raise some error div and don't set any state
             return false;
         }
 
         if (newAttachment.blocking) {
-            const blocksToAdd = newAttachment.blocks;
-            const blockingIndex = parameters.attachments.findIndex(attachment => blocksToAdd.indexOf(attachment.type) > -1);
+            const blockingIndex = parameters.attachments.findIndex(attachment => newAttachment.blocks.indexOf(attachment.type) > -1);
 
             if (blockingIndex > -1) {
                 console.log(`Attachment ${newAttachment.name} would block ${parameters.attachments[blockingIndex].name}!`);
@@ -229,12 +235,10 @@ export default function Builder() {
             }
         }
 
-        //Replace the current type attachment with the new one if there is one
-        const typeIndex = parameters.attachments.findIndex((element) => element.type === attachmentType);
-
         var newAttachments = [...parameters.attachments];
         var newBlocks = [...parameters.blocks];
 
+        //If type already exists, remove the old attachment and blocked types
         if (typeIndex !== -1) {
             const attachment = data.attachments[attachmentType].find((element) => element.name === parameters.attachments[typeIndex].name);
             if (attachment === undefined) {
@@ -244,32 +248,20 @@ export default function Builder() {
             }
             console.log(`Attachment type already exists!! Replacing ${parameters.attachments[typeIndex].type} with ${newAttachment.name}`);
             
-            //Remove the old attachments and blocks
+            
             newAttachments = newAttachments.filter(currentAttachment => currentAttachment.name !== attachment.name);
             if (attachment.blocking) {
+                console.log(`Removing blocks: ${attachment.blocks} from ${newBlocks}`);
                 for (const block of attachment.blocks) {
                     const place = newBlocks.indexOf(block);
                     if (place === -1) continue;
                     newBlocks.splice(place, 1);
-                    console.log(newBlocks);
                 }
             }
+        }
 
-            //Add the new attachment and update the state at once
-            // setAttachments([...newAttachments, {name: newAttachment.name, type: attachmentType, aftermarket: newAttachment.aftermarket}]);
-            // setParameters({...parameters, attachments: newAttachments.map(a => a.name)});
-            // newAttachment.blocking ? setBlocks([...newBlocks, ...newAttachment.blocks]) : setBlocks([...newBlocks]);
-        } 
-        // else {
-            //Add all blocking types to the block list (duplicates allowed)
-            // if (newAttachment.blocking) {
-            //     newBlocks = newBlocks.concat(newAttachment.blocks);
-            // }
-            // const attachments_copy = [...attachments, {name: newAttachment.name, type: attachmentType, aftermarket: newAttachment.aftermarket}];
-            // setAttachments([attachments_copy]);
-            // setParameters({...parameters, attachments: attachments_copy.map(a => a.name)});
-        // }
-        console.log(newAttachments);
+        console.log(newAttachments, newAttachment);
+        console.log(newAttachment.blocking ? [...newBlocks, ...newAttachment.blocks] : [...newBlocks]);
         setParameters({...parameters,
             attachments: [...newAttachments, {name: newAttachment.name, type: attachmentType, aftermarket: newAttachment.aftermarket}],
             blocks: newAttachment.blocking ? [...newBlocks, ...newAttachment.blocks] : [...newBlocks]
@@ -284,22 +276,23 @@ export default function Builder() {
      * @param oldAttachment - an Object that should have the properties {name: string, blocking: boolean, blocks?: array of strings}
     */
     function removeAttachment (oldAttachment) {
+        console.log(oldAttachment);
         var newAttachments = parameters.attachments.filter(currentAttachment => currentAttachment['name'] !== oldAttachment['name']);
         var newBlocks = [...parameters.blocks];
-        for (const block of parameters.blocks) {
-            const place = newBlocks.indexOf(block);
-            if (place === -1) continue;
-            newBlocks.splice(place, 1);
-            console.log(newBlocks);
+
+        if (oldAttachment.blocking) {
+            for (const block of oldAttachment.blocks) {
+                const place = newBlocks.indexOf(block);
+                if (place === -1) continue;
+                newBlocks.splice(place, 1);
+            }
         }
-        //setAttachments(attachments.filter(currentAttachment => currentAttachment['name'] !== oldAttachment['name']));
+        
+        console.log(newBlocks);
         setParameters({...parameters, 
             attachments: newAttachments,
             blocks: newBlocks
         });
-        // if (oldAttachment['blocking']) {
-        //     removeBlocks(oldAttachment['blocks']);
-        // }
     }
 
     /*

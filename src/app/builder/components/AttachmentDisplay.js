@@ -10,7 +10,7 @@ export default function AttachmentDisplay( { data, parameters, addAttachment, re
     //for each gun will stay alive after each re-render
     //but they will destroy and recreate themselves when the gun selected changes
     //It is guaranteed that the index will not change over the lifetime of these components (since it comes from the database)
-    console.log(parameters);
+    //console.log(parameters);
     //const gun = guns.find((gun) => gun.name === parameters.gunName);
     //var id = -1;
     //if (gun !== undefined) {

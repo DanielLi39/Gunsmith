@@ -40,7 +40,7 @@ export default function GunDisplay( {isOpen, parameters, setParameters} ) {
                             Save Build
                         </button>
                         <button type="button" onClick={() => editBuild(parameters)}
-                                className={`${!parameters.edit[0] && 'hidden'} rounded-md py-1 px-3 bg-red-800/75 border-2 border-white w-32 text-red-100 text-semibold`}>
+                                className={`${!parameters.edit && 'hidden'} rounded-md py-1 px-3 bg-red-800/75 border-2 border-white w-32 text-red-100 text-semibold`}>
                             Edit build
                         </button>
                     </div> 
