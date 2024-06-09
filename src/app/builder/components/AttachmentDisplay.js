@@ -2,7 +2,7 @@
 
 import { guns } from "../actions/guns";
 
-export default function AttachmentDisplay( { gunName, blockList, data, addAttachment, removeAttachment, attachmentList} ) {
+export default function AttachmentDisplay( { data, parameters, addAttachment, removeAttachment} ) {
   if (data !== null) {
     const entries = Object.entries(data);
     //THIS IS IMPORTANT - unique 'hash' function for the keys. 1000 is chosen so no guns will conflict
@@ -10,16 +10,23 @@ export default function AttachmentDisplay( { gunName, blockList, data, addAttach
     //for each gun will stay alive after each re-render
     //but they will destroy and recreate themselves when the gun selected changes
     //It is guaranteed that the index will not change over the lifetime of these components (since it comes from the database)
-    const id = guns.find((gun) => gun.name === gunName).id;
+    console.log(parameters);
+    //const gun = guns.find((gun) => gun.name === parameters.gunName);
+    //var id = -1;
+    //if (gun !== undefined) {
+    //  id = gun.id;
+    //}
+    //console.log(gun, id, parameters.gunName);
+    const id = guns.find((gun) => gun.name === parameters.gunName).id;
     return (
         <div className="flex flex-row justify-between items-center bg-neutral-900 h-1/6">
             {entries.map((entry, index) => {
                 return (
                     <AttachmentCategory name={entry[0]} items={entry[1]} key={(1000 * id) + index} 
                                         first={index === 0} last={index === entries.length - 1}
-                                        isBlocked={blockList.indexOf(entry[0]) > -1}
+                                        isBlocked={parameters.blocks.indexOf(entry[0]) > -1}
                                         addAttachment={addAttachment} removeAttachment={removeAttachment} 
-                                        attachmentList={attachmentList}/>
+                                        attachmentList={parameters.attachments}/>
                 );
             })}
         </div>

@@ -2,7 +2,7 @@
 
 import BuildList from "./components/BuildList";
 import GunBuilder from "./components/GunBuilder";
-import { useState } from "react"
+import { createContext, useState } from "react"
 import loadGun from "./actions/loadGun";
 
 export default function Builder() {
@@ -47,25 +47,79 @@ export default function Builder() {
         aftermarket: boolean
     }
     */
-    const [attachments, setAttachments] = useState([]);
+    //const [attachments, setAttachments] = useState([]);
 
     // blocks will track the current blocked attachment categories
     // blocks is an array of strings, where each string corresponds to one blocked type
-    const [blocks, setBlocks] = useState([]);
+    //const [blocks, setBlocks] = useState([]);
 
+    // Controls whether the gun builder will feature an edit build button or not
+    // Only activated when a build is to be displayed
+    //const [edit, setEdit] = useState([false, undefined]);
+
+    // TO-DO: Author should be inherited from context once logged in
+    // Parameters holds the attachment and blocked type lists, as well as the gunsmith's build details
+    // All edits should be bundled into one
+    const initialParameters = {
+        id: undefined,
+        name: '',
+        author: '',
+        gunName: '',
+        attachments: [],
+        blocks: [],
+        edit: false,
+        public: false
+    };
+
+    const [parameters, setParameters] = useState(initialParameters);
     /*
-     * queryGun will update the data, attachments, and blocks states to reflect a preloaded gun
+     * queryGun will load in a base gun into the gun builder
      * @param gunName - The gun's name
-     * @param attachmentList - The attachment list to load
     */
-    async function queryGun(gunName, attachmentList) {
+    async function queryGun(gunName) {
         const result = await loadGun(gunName);
 
         if (result.success) {
             var blockList = [];
             var newAttachments = [];
+
+            if (result.data.conversion) {
+                newAttachments.push([result.data.conversion_kit]);
+                if (result.data.conversion_kit.blocking) {
+                    blockList = [...result.data.conversion_kit.blocks]
+                }
+            }
+            
+            setData(result.data);
+            //setAttachments([...newAttachments]);
+            //setBlocks([...blockList]);
+            setParameters({
+                name: '',
+                author: '',
+                gunName: gunName,
+                attachments: [...newAttachments],
+                blocks: [...blockList],
+                edit: false,
+                public: false
+            });
+        } else {
+            console.log(result.error);
+        }
+    }
+
+    /*
+     * queryBuild will update the data, attachments, and blocks states to reflect a preloaded build
+     * @param build - Object holding the build's id, gun name, name, author, attachments, privacy
+    */
+    async function queryBuild(build) {
+        const result = await loadGun(build.gunName);
+
+        if (result.success) {
+            var blockList = [];
+            var newAttachments = [];
             for (const key of Object.keys(result.data.attachments)) {
-                const exist = result.data.attachments[key].find(attachment => attachmentList.indexOf(attachment.name) > -1);
+            
+                const exist = result.data.attachments[key].find(attachment => build.attachments.indexOf(attachment.name) > -1);
                 if (exist === undefined) {
                     console.log(`Attachment could not be found in category ${key}`);
                     continue;
@@ -77,8 +131,20 @@ export default function Builder() {
             }
             
             setData(result.data);
-            setAttachments([...newAttachments]);
-            setBlocks([...blockList]);
+            //setAttachments([...newAttachments]);
+            //setBlocks([...blockList]);
+            //setEdit([true, id]);
+            //Fix to signed in user for author -TODO
+            setParameters({
+                id: build._id,
+                name: build.name,
+                author: build.author,
+                gunName: build.gunName,
+                attachments: [...newAttachments],
+                blocks: [...blockList],
+                edit: true,
+                public: false
+            });
         } else {
             console.log(result.error);
         }
@@ -96,13 +162,18 @@ export default function Builder() {
             const result = await loadGun(gun.name);
             
             if (result.success) {
+                var newBlocks = [];
+                if (result.data.conversion && result.data.conversion_kit.blocking) {
+                    newBlocks = newBlocks.concat(result.data.conversion_kit.blocks);
+                }
+
                 console.log(result);
                 setData(result.data);
-                if (result.data.conversion) {
-                    resetAttachments([result.data.conversion_kit]);
-                } else {
-                    resetAttachments([]);
-                }
+                setParameters({...parameters, 
+                    gunName: (result.data.conversion ? result.data.base : result.data.name),
+                    attachments: (result.data.conversion) ? [result.data.conversion_kit.name] : [],
+                    blocks: newBlocks
+                });
             } else {
                 console.log(result);
             }
@@ -113,16 +184,18 @@ export default function Builder() {
      * resetAttachments will reset attachments to the initial state of the gun
      * @param attachments - list of attachments to reset to
     */
-    function resetAttachments(attachments) {
-        setAttachments([...attachments]);
-        var newBlocks = [];
-        for (const attachment of attachments) {
-            if (attachment.blocking) {
-                newBlocks = newBlocks.concat(attachment.blocks);
-            }
-        }
-        setBlocks(newBlocks);
-    }
+    // function resetAttachments(attachments) {
+    //     setAttachments([...attachments]);
+    //     setParameters({...parameters, attachments: []});
+
+    //     var newBlocks = [];
+    //     for (const attachment of attachments) {
+    //         if (attachment.blocking) {
+    //             newBlocks = newBlocks.concat(attachment.blocks);
+    //         }
+    //     }
+    //     setBlocks(newBlocks);
+    // }
 
     /*
      * Attempt to add the attachment to the attachmentList
@@ -139,7 +212,7 @@ export default function Builder() {
     function addAttachment (newAttachment, attachmentType) {
         //Check if the attachment list is full, if the current block list would not permit the new attachment,
         //or if any current attachments would be blocked by the new attachment's block list
-        if (attachments.length == 5 || blocks.indexOf(attachmentType) > -1) {
+        if (parameters.attachments.length == 5 || parameters.blocks.indexOf(attachmentType) > -1) {
             console.log("Attachment list full or a current attachment would be blocked!");
             //Raise some error div and don't set any state
             return false;
@@ -147,28 +220,29 @@ export default function Builder() {
 
         if (newAttachment.blocking) {
             const blocksToAdd = newAttachment.blocks;
-            const blockingIndex = attachments.findIndex(attachment => blocksToAdd.indexOf(attachment.type) > -1);
+            const blockingIndex = parameters.attachments.findIndex(attachment => blocksToAdd.indexOf(attachment.type) > -1);
 
             if (blockingIndex > -1) {
-                console.log(`Attachment ${newAttachment.name} would block ${attachments[blockingIndex].name}!`);
+                console.log(`Attachment ${newAttachment.name} would block ${parameters.attachments[blockingIndex].name}!`);
                 //Raise some error div and don't set any state
                 return false;
             }
         }
 
         //Replace the current type attachment with the new one if there is one
-        const typeIndex = attachments.findIndex((element) => element.type === attachmentType);
+        const typeIndex = parameters.attachments.findIndex((element) => element.type === attachmentType);
+
+        var newAttachments = [...parameters.attachments];
+        var newBlocks = [...parameters.blocks];
+
         if (typeIndex !== -1) {
-            const attachment = data.attachments[attachmentType].find((element) => element.name === attachments[typeIndex].name);
+            const attachment = data.attachments[attachmentType].find((element) => element.name === parameters.attachments[typeIndex].name);
             if (attachment === undefined) {
                 //This should never happen unless the attachment state is out of sync with the database
                 console.log("ERROR: THIS SHOULD NEVER HAPPEN?");
                 return false;
             }
-            console.log(`Attachment type already exists!! Replacing ${attachments[typeIndex].type} with ${newAttachment.name}`);
-            
-            var newAttachments = [...attachments];
-            var newBlocks = [...blocks];
+            console.log(`Attachment type already exists!! Replacing ${parameters.attachments[typeIndex].type} with ${newAttachment.name}`);
             
             //Remove the old attachments and blocks
             newAttachments = newAttachments.filter(currentAttachment => currentAttachment.name !== attachment.name);
@@ -182,17 +256,25 @@ export default function Builder() {
             }
 
             //Add the new attachment and update the state at once
-            setAttachments([...newAttachments, {name: newAttachment.name, type: attachmentType, aftermarket: newAttachment.aftermarket}]);
-            newAttachment.blocking ? setBlocks([...newBlocks, ...newAttachment.blocks]) : setBlocks([...newBlocks]);
-            return true;
-        } else {
+            // setAttachments([...newAttachments, {name: newAttachment.name, type: attachmentType, aftermarket: newAttachment.aftermarket}]);
+            // setParameters({...parameters, attachments: newAttachments.map(a => a.name)});
+            // newAttachment.blocking ? setBlocks([...newBlocks, ...newAttachment.blocks]) : setBlocks([...newBlocks]);
+        } 
+        // else {
             //Add all blocking types to the block list (duplicates allowed)
-            if (newAttachment.blocking) {
-                addBlocks(newAttachment.blocks);
-            }
-            setAttachments([...attachments, {name: newAttachment.name, type: attachmentType, aftermarket: newAttachment.aftermarket}]);
-            return true;
-        }
+            // if (newAttachment.blocking) {
+            //     newBlocks = newBlocks.concat(newAttachment.blocks);
+            // }
+            // const attachments_copy = [...attachments, {name: newAttachment.name, type: attachmentType, aftermarket: newAttachment.aftermarket}];
+            // setAttachments([attachments_copy]);
+            // setParameters({...parameters, attachments: attachments_copy.map(a => a.name)});
+        // }
+        console.log(newAttachments);
+        setParameters({...parameters,
+            attachments: [...newAttachments, {name: newAttachment.name, type: attachmentType, aftermarket: newAttachment.aftermarket}],
+            blocks: newAttachment.blocking ? [...newBlocks, ...newAttachment.blocks] : [...newBlocks]
+        });
+        return true;
     }
 
     /*
@@ -202,44 +284,56 @@ export default function Builder() {
      * @param oldAttachment - an Object that should have the properties {name: string, blocking: boolean, blocks?: array of strings}
     */
     function removeAttachment (oldAttachment) {
-        setAttachments(attachments.filter(currentAttachment => currentAttachment['name'] !== oldAttachment['name']));
-        if (oldAttachment['blocking']) {
-            removeBlocks(oldAttachment['blocks']);
+        var newAttachments = parameters.attachments.filter(currentAttachment => currentAttachment['name'] !== oldAttachment['name']);
+        var newBlocks = [...parameters.blocks];
+        for (const block of parameters.blocks) {
+            const place = newBlocks.indexOf(block);
+            if (place === -1) continue;
+            newBlocks.splice(place, 1);
+            console.log(newBlocks);
         }
+        //setAttachments(attachments.filter(currentAttachment => currentAttachment['name'] !== oldAttachment['name']));
+        setParameters({...parameters, 
+            attachments: newAttachments,
+            blocks: newBlocks
+        });
+        // if (oldAttachment['blocking']) {
+        //     removeBlocks(oldAttachment['blocks']);
+        // }
     }
 
     /*
      * addBlocks will concatenate blocks with block
      * @param blockList - an array of strings that specifies the blocked categories to add
     */
-    function addBlocks(blockList) {
-        setBlocks([...blocks, ...blockList]);
-    }
+    // function addBlocks(blockList) {
+    //     setBlocks([...blocks, ...blockList]);
+    // }
 
     /*
      * removeBlocks will remove one instance of blockList from blocks
      * @param blockList - an array of strings that specifies the blocked categories to remove
     */
-    function removeBlocks(blockList) {
-        console.log("Trying to remove", blockList);
+    // function removeBlocks(blockList) {
+    //     console.log("Trying to remove", blockList);
 
-        var newBlocks = [...blocks];
-        for (const block of blockList) {
-            const place = newBlocks.indexOf(block);
-            if (place === -1) continue;
-            newBlocks.splice(place, 1);
-            console.log(newBlocks);
-        }
-        console.log(newBlocks);
-        setBlocks(newBlocks);
-    }
+    //     var newBlocks = [...blocks];
+    //     for (const block of blockList) {
+    //         const place = newBlocks.indexOf(block);
+    //         if (place === -1) continue;
+    //         newBlocks.splice(place, 1);
+    //         console.log(newBlocks);
+    //     }
+    //     console.log(newBlocks);
+    //     setBlocks(newBlocks);
+    // }
     
     return (
         <>
-        <GunBuilder data={data} attachments={attachments} blocks={blocks} 
-                    receiveData={receiveData} resetAttachments={resetAttachments}
+        <GunBuilder data={data} parameters={parameters}
+                    setParameters={setParameters} receiveData={receiveData}
                     addAttachment={addAttachment} removeAttachment={removeAttachment}/>
-        <BuildList sendToGunsmith={queryGun}/>
+        <BuildList sendBuildToGunsmith={queryBuild} sendGunToGunsmith={queryGun}/>
         </>
     );
 }

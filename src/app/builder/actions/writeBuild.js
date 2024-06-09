@@ -47,27 +47,36 @@ async function connect(data) {
     return result;
 }
 */
-export default async function writeBuild( formData ) {
-    const data = [];
-    var first = true;
-    for (const pair of formData.entries()) {
-        if (!first) {
-            if (pair[0] === 'attachments') {
-                if (pair[1] === '') {
-                    data.push([pair[0], []]);
-                } else {
-                    data.push([pair[0], pair[1].split(',')]);
-                }
-            } else if (pair[0] === 'public') {
-                data.push([pair[0], (pair[1] === 'on' ? true : false)])
-            } else {
-                data.push([pair[0], pair[1]]);
-            }
-        } else {
-            first = false;
-        }
-    }
-    const result = await connect(_writeBuild, Object.fromEntries(data), resultHandler, false);
+export default async function writeBuild(parameters) {
+    const data = {};
+    //var first = true;
+    console.log(parameters);
+    // for (const pair of parameters.entries()) {
+    //     console.log(pair);
+    //     if (!first) {
+    //         if (pair[0] === 'attachments') {
+    //             if (pair[1] === '') {
+    //                 data.push([pair[0], []]);
+    //             } else {
+    //                 data.push([pair[0], pair[1].split(',')]);
+    //             }
+    //         } else if (pair[0] === 'public') {
+    //             data.push([pair[0], (pair[1] === 'on' ? true : false)])
+    //         } else {
+    //             data.push([pair[0], pair[1]]);
+    //         }
+    //     } else {
+    //         first = false;
+    //     }
+    // }
+
+    data.name = parameters.name;
+    data.author = parameters.author;
+    data.gunName = parameters.gunName;
+    data.attachments = parameters.attachments;
+    data.public = parameters.public;
+
+    const result = await connect(_writeBuild, data, resultHandler, false);
 
     return result;
 }

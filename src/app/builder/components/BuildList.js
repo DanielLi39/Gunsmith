@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import queryBuilds from "../actions/queryBuilds";
 import deleteBuild from "../actions/deleteBuild";
 import queryGuns from "../actions/queryGuns";
 
-export default function BuildList( {sendToGunsmith} ) {
+export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith} ) {
     //The author will be inherited from a context once logged in - TODO
     const initialParameters = 
     {
@@ -31,6 +31,8 @@ export default function BuildList( {sendToGunsmith} ) {
         }
     };
 
+    const previousQuery = useRef(initialParameters);
+    
     const [builds, setBuilds] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     //SearchType is true to search for custom builds, false to search in established gun list
@@ -38,6 +40,7 @@ export default function BuildList( {sendToGunsmith} ) {
     const [parameters, setParameters] = useState(initialParameters);
 
     async function searchBuild() {
+        previousQuery.current = structuredClone(parameters);
         const result = await queryBuilds(parameters);
         console.log(result);
         if (result.success) {
@@ -49,6 +52,7 @@ export default function BuildList( {sendToGunsmith} ) {
     async function listBuild() {
         const list_own = structuredClone(initialParameters);
         list_own.show_private = true;
+        previousQuery.current = structuredClone(list_own);
         const result = await queryBuilds(list_own);
         console.log(result);
         if (result.success) {
@@ -70,7 +74,12 @@ export default function BuildList( {sendToGunsmith} ) {
         const result = await deleteBuild(id);
         console.log(result);
         if (result.success) {
-            await searchBuild();
+            const res = await queryBuilds(previousQuery.current);
+            console.log(result);
+            if (result.success) {
+                setBuilds(res.data);
+                setIsOpen(true);
+            }
         }
     }
 
@@ -91,6 +100,7 @@ export default function BuildList( {sendToGunsmith} ) {
                     setSearchType(true);
                     setParameters(initialParameters);
                     setIsOpen(false);
+                    previousQuery.current = initialParameters;
                     }}>Custom Builds</button>
                 <button onClick={() => {
                     if (searchType) {
@@ -99,6 +109,7 @@ export default function BuildList( {sendToGunsmith} ) {
                     setSearchType(false);
                     setParameters(initialParameters);
                     setIsOpen(false);
+                    previousQuery.current = initialParameters;
                     }}>Guns</button>
             </div>
             <div className={`${searchType ? 'grid grid-cols-2 grid-rows-4 mx-auto' : 'hidden'}`}>
@@ -206,7 +217,7 @@ export default function BuildList( {sendToGunsmith} ) {
                                                     <td className={`${table_cell_details}`}>{build.name}</td>
                                                     <td className={`${table_cell_details}`}>{build.gunName}</td>
                                                     <td className={`${table_cell_details}`}>{build.attachments?.join(', ').trim()}</td>
-                                                    <td className={`${table_cell_details} cursor-pointer`} onClick={() => sendToGunsmith(build.gunName, build.attachments)}>Load</td>
+                                                    <td className={`${table_cell_details} cursor-pointer`} onClick={() => sendBuildToGunsmith(build)}>Load</td>
                                                     <td className={`${table_cell_details} cursor-pointer`} onClick={() => deleteItem(build._id)}>Delete</td>
                                                 </tr>
                                             );
@@ -252,7 +263,7 @@ export default function BuildList( {sendToGunsmith} ) {
                                                     <td className={`${table_cell_details}`}>{build.actions?.join(', ').trim()}</td>
                                                     <td className={`${table_cell_details}`}>{build.caliber?.join(', ').trim()}</td>
                                                     <td className={`${table_cell_details} cursor-pointer`}>
-                                                        <select className="text-black w-full" onChange={(evt) => {(evt.target.value !== "Select gun") ? sendToGunsmith(evt.target.value, []) : ''}}>
+                                                        <select className="text-black w-full" onChange={(evt) => {(evt.target.value !== "Select gun") ? sendGunToGunsmith(evt.target.value) : ''}}>
                                                             <option className={option_details} value={"Select gun"}>Select gun</option>
                                                             <option className={option_details} value={build.name}>{build.name}</option>
                                                             {(build.hasOwnProperty('aftermarkets')) &&

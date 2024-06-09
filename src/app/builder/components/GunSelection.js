@@ -6,7 +6,7 @@ import GunList from "./GunList";
  * @param details - styling arguments using Tailwind
  * @param valueHandler - an external state change handler to store the complete query
 */
-export default function GunSelection( {details, onSelection, resetAttachments} ) {
+export default function GunSelection( {details, onSelection} ) {
     /*
      * Initialize states for the dropdown
      * isOpen tracks if the dropdown is open or not
