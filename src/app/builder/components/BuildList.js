@@ -5,13 +5,13 @@ import queryBuilds from "../actions/queryBuilds";
 import deleteBuild from "../actions/deleteBuild";
 import queryGuns from "../actions/queryGuns";
 
-export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith} ) {
+export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith, user} ) {
     //The author will be inherited from a context once logged in - TODO
     const initialParameters = 
     {
         build: 
         {
-            author: 'dummy', 
+            author: user, 
             name: '', 
             gun: '', 
             attachments: '', 
