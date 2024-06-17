@@ -1,8 +1,8 @@
 'use server';
 
-import { MongoClient } from "mongodb";
+import { MongoClient, ServerApiVersion } from "mongodb";
 
-export default async function queryUser(username, password) {
+export default async function queryUser(email) {
     const client = new MongoClient(process.env.MONGODB_URI, {
         serverApi: {
             version: ServerApiVersion.v1,
@@ -13,10 +13,13 @@ export default async function queryUser(username, password) {
 
     try {
         await client.connect();
-        if (debug) console.log("Client connected!");
-        const result = await client.db("mw3_gunbuilds").collection("users").findOne({username: username, password: password}, {projection: {_id: 0}});
-        if (debug) console.log("Pinged your deployment. You successfully connected to MongoDB!");
-        return result;
+        const result = await client.db("mw3_gunbuilds").collection("users").findOne({email: email}, {projection: {_id: 0}});
+        
+        console.log(result);
+        if (!result) {
+            return result;
+        }
+        return result.username;
     } catch (error) {
         console.log(error);
         return null;

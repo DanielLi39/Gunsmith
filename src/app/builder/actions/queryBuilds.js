@@ -86,6 +86,7 @@ async function _queryBuilds(client, parameters) {
     (parameters.build.author !== '') ? (query.author = parameters.build.author) : "";
     (parameters.build.name !== '') ? (query.name = parameters.build.name) : "";
     (parameters.build.gun !== '') ? (query.gunName = parameters.build.gun) : "";
+    (parameters.build.camo !== '') ? (query.camo = parameters.build.camo) : "";
     (attachmentList.length !== 0) ? 
         (parameters.build.all ? (query.attachments = { $all: attachmentList }) : (query.attachments = { $in: attachmentList }))
         : "";

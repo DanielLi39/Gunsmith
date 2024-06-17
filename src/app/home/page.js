@@ -1,5 +1,3 @@
-import NavBar from "../lib/components/NavBar";
-
 function Header({title}) {
   return <h1>{title}</h1>;
 }

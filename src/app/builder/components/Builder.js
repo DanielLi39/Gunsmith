@@ -2,10 +2,12 @@
 
 import BuildList from "./BuildList";
 import GunBuilder from "./GunBuilder";
-import { useState } from "react"
+import { useState, createContext } from "react";
 import loadGun from "../actions/loadGun";
 
-export default function Builder( {session} ) {
+export const UserContext = createContext(null);
+
+export default function Builder( {username} ) {
     // data will hold the gun document data returned from the database
     /* data will hold the object: 
     {
@@ -63,8 +65,8 @@ export default function Builder( {session} ) {
     const initialParameters = {
         id: undefined,
         name: '',
-        author: session?.user.name,
         gunName: '',
+        camo: '',
         base: undefined,
         attachments: [],
         blocks: [],
@@ -135,12 +137,11 @@ export default function Builder( {session} ) {
             //setAttachments([...newAttachments]);
             //setBlocks([...blockList]);
             //setEdit([true, id]);
-            //Fix to signed in user for author -TODO
             setParameters({
                 id: build._id,
                 name: build.name,
-                author: session?.user.name,
                 gunName: build.gunName,
+                camo: build.camo,
                 base: result.data.conversion ? result.data.base : undefined,
                 attachments: [...newAttachments],
                 blocks: [...blockList],
@@ -321,11 +322,11 @@ export default function Builder( {session} ) {
     // }
     
     return (
-        <>
-        <GunBuilder data={data} parameters={parameters}
-                    setParameters={setParameters} receiveData={receiveData}
-                    addAttachment={addAttachment} removeAttachment={removeAttachment}/>
-        <BuildList sendBuildToGunsmith={queryBuild} sendGunToGunsmith={queryGun} user={session?.user.name}/>
-        </>
+        <UserContext.Provider value={username}>
+            <GunBuilder data={data} parameters={parameters}
+                        setParameters={setParameters} receiveData={receiveData}
+                        addAttachment={addAttachment} removeAttachment={removeAttachment}/>
+            <BuildList sendBuildToGunsmith={queryBuild} sendGunToGunsmith={queryGun}/>
+        </UserContext.Provider>
     );
 }

@@ -1,11 +1,13 @@
 'use client';
 
-import { useRef, useState } from "react";
+import { useRef, useState, useContext } from "react";
 import queryBuilds from "../actions/queryBuilds";
 import deleteBuild from "../actions/deleteBuild";
 import queryGuns from "../actions/queryGuns";
+import { UserContext } from "./Builder";
 
-export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith, user} ) {
+export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith} ) {
+    const user = useContext(UserContext);
     //The author will be inherited from a context once logged in - TODO
     const initialParameters = 
     {
@@ -14,6 +16,7 @@ export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith, user
             author: user, 
             name: '', 
             gun: '', 
+            camo: '',
             attachments: '', 
             all: true,
             show_private: false
@@ -92,6 +95,7 @@ export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith, user
     //Advanced search: Search by user, by name, by gun, by attachment list
     return (
         <div className="flex flex-col justify-items-center h-screen bg-neutral-900 text-white">
+            {/* Search option selection - controls the two buttons to switch between different search options*/}
             <div className="flex flex-row justify-center">
                 <button onClick={() => {
                     if (!searchType) {
@@ -112,26 +116,33 @@ export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith, user
                     previousQuery.current = initialParameters;
                     }}>Guns</button>
             </div>
-            <div className={`${searchType ? 'grid grid-cols-2 grid-rows-4 mx-auto' : 'hidden'}`}>
-                <label className="flex flex-col col-start-1 col-end-1">
+            <div className={`${searchType ? 'grid grid-cols-2 grid-rows-5 mx-auto' : 'hidden'}`}>
+                <label className="flex flex-col col-start-1 row-start-1">
                     Author
-                    <input className={build_input_details} value={parameters.build.author} 
+                    <input className={build_input_details} value={parameters.build.author} autoComplete="off"
                         onChange={(e) => setParameters({...parameters, build: {...parameters.build, author: e.target.value}})}/>
                 </label>
-                <label className="flex flex-col col-start-1 col-end-1">
+                <label className="flex flex-col col-start-1 row-start-2">
                     Name
-                    <input className={build_input_details} value={parameters.build.name} onChange={(e) => setParameters({...parameters, build: {...parameters.build, name: e.target.value}})}/>
+                    <input className={build_input_details} value={parameters.build.name} autoComplete="off"
+                        onChange={(e) => setParameters({...parameters, build: {...parameters.build, name: e.target.value}})}/>
                 </label>
-                <label className="flex flex-col col-start-1 col-end-1">
+                <label className="flex flex-col col-start-1 row-start-3">
                     Gun
-                    <input className={build_input_details} value={parameters.build.gun} onChange={(e) => setParameters({...parameters, build: {...parameters.build, gun: e.target.value}})}/>
+                    <input className={build_input_details} value={parameters.build.gun} autoComplete="off" 
+                        onChange={(e) => setParameters({...parameters, build: {...parameters.build, gun: e.target.value}})}/>
                 </label>
-                
-                <label className="flex flex-col col-start-2 col-end-2 row-start-1 row-span-3">
+                <label className="flex flex-col col-start-1 row-start-4">
+                    Camo
+                    <input className={build_input_details} value={parameters.build.camo} autoComplete="off" 
+                        onChange={(e) => setParameters({...parameters, build: {...parameters.build, camo: e.target.value}})}/>
+                </label>
+                <label className="flex flex-col col-start-2 row-start-1 row-span-4">
                     Attachments (comma separated):
-                    <textarea className={`${build_input_details} h-full w-full text-wrap`} value={parameters.build.attachments} onChange={(e) => setParameters({...parameters, build: {...parameters.build, attachments: e.target.value}})}/>
+                    <textarea className={`${build_input_details} h-full w-full text-wrap`} value={parameters.build.attachments} autoComplete="off"
+                        onChange={(e) => setParameters({...parameters, build: {...parameters.build, attachments: e.target.value}})}/>
                 </label>
-                <div className="flex flex-row justify-center col-start-1 col-end-3 row-start-4 row-end-4">
+                <div className="flex flex-row justify-center col-start-1 col-end-3 row-start-5">
                     <button type="button" onClick={() => searchBuild()}>Search public builds</button>
                     <button type="button" onClick={() => listBuild()}>List own builds</button>
                     <button type="button" onClick={() => setParameters(initialParameters)}>Reset search</button>
@@ -144,36 +155,44 @@ export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith, user
             <div className={`${searchType ? 'hidden' : 'grid grid-cols-2 mx-auto'}`}>
                 <label className="flex flex-col col-start-1">
                     Name
-                    <input className={build_input_details} value={parameters.gun.name} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, name: e.target.value}})}/>
+                    <input className={build_input_details} value={parameters.gun.name} autoComplete="off"
+                        onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, name: e.target.value}})}/>
                 </label>
                 <label className="flex flex-col col-start-2">
                     Type
-                    <input className={build_input_details} value={parameters.gun.type} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, type: e.target.value}})}/>
+                    <input className={build_input_details} value={parameters.gun.type} autoComplete="off"
+                        onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, type: e.target.value}})}/>
                 </label>
                 <label className="flex flex-col col-start-2 row-start-2">
                     Attachments (comma separated):
-                    <textarea className={build_input_details} value={parameters.gun.attachments} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, attachments: e.target.value}})}/>
+                    <textarea className={build_input_details} value={parameters.gun.attachments} autoComplete="off"
+                        onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, attachments: e.target.value}})}/>
                 </label>
                 <label className="flex flex-col col-start-1 row-start-2">
                     Fire action
-                    <textarea className={build_input_details} value={parameters.gun.action} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, action: e.target.value}})}/>
+                    <textarea className={build_input_details} value={parameters.gun.action} autoComplete="off"
+                        onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, action: e.target.value}})}/>
                 </label>
                 <label className="flex flex-col col-start-1 row-start-3">
                     Caliber
-                    <textarea className={build_input_details} value={parameters.gun.caliber} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, caliber: e.target.value}})}/>
+                    <textarea className={build_input_details} value={parameters.gun.caliber} autoComplete="off"
+                        onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, caliber: e.target.value}})}/>
                 </label>
                 <div className="grid grid-cols-2 grid-rows-2 col-start-2 row-start-3">
                     <label className="flex flex-row items-center justify-center">
                         Match all attachments:
-                        <input type="checkbox" checked={parameters.gun.attachments_all} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, attachments_all: e.target.checked}})}/>
+                        <input type="checkbox" checked={parameters.gun.attachments_all} 
+                            onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, attachments_all: e.target.checked}})}/>
                     </label>
                     <label className="flex flex-row items-center justify-center">
                         Match all fire actions:
-                        <input type="checkbox" checked={parameters.gun.action_all} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, action_all: e.target.checked}})}/>
+                        <input type="checkbox" checked={parameters.gun.action_all} 
+                            onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, action_all: e.target.checked}})}/>
                     </label>
                     <label className="col-start-1 col-end-3 flex flex-row justify-center items-center">
                         Match all calibers:
-                        <input type="checkbox" checked={parameters.gun.caliber_all} onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, caliber_all: e.target.checked}})}/>
+                        <input type="checkbox" checked={parameters.gun.caliber_all} 
+                            onChange={(e) => setParameters({...parameters, gun: {...parameters.gun, caliber_all: e.target.checked}})}/>
                     </label>
                 </div>
                 <div className="flex flex-row justify-center col-start-1 col-end-3">
@@ -188,14 +207,15 @@ export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith, user
                             <th className={`${table_cell_details} w-[150px]`}>Created By</th>
                             <th className={`${table_cell_details} w-[225px]`}>Name</th>
                             <th className={`${table_cell_details} w-[150px]`}>Gun</th>
-                            <th className={`${table_cell_details} w-[802px]`}>Attachments</th>
+                            <th className={`${table_cell_details} w-[150px]`}>Camo</th>
+                            <th className={`${table_cell_details} w-[652px]`}>Attachments</th>
                             <th className={`${table_cell_details} w-[75px]`}>Click to load</th>
                             <th className={`${table_cell_details} w-[96px]`}>Click to delete build</th>
                         </tr>
                     </thead>
                     <tbody className="">
                         <tr>
-                            <td colSpan='6'>
+                            <td colSpan='7'>
                                 <div className="block overflow-y-scroll h-96">
                                     <table className="w-[1477px] table-fixed">
                                     <thead>
@@ -203,7 +223,8 @@ export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith, user
                                             <th className={`w-[147px]`}></th>
                                             <th className={`w-[225px]`}></th>
                                             <th className={`w-[150px]`}></th>
-                                            <th className={`w-[801px]`}></th>
+                                            <th className={`w-[150px]`}></th>
+                                            <th className={`w-[651px]`}></th>
                                             <th className={`w-[75px]`}></th>
                                             <th className={`w-[76px]`}></th>
                                         </tr>
@@ -216,6 +237,7 @@ export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith, user
                                                     <td className={`${table_cell_details}`}>{build.author}</td>
                                                     <td className={`${table_cell_details}`}>{build.name}</td>
                                                     <td className={`${table_cell_details}`}>{build.gunName}</td>
+                                                    <td className={`${table_cell_details}`}>{build.camo}</td>
                                                     <td className={`${table_cell_details}`}>{build.attachments?.join(', ').trim()}</td>
                                                     <td className={`${table_cell_details} cursor-pointer`} onClick={() => sendBuildToGunsmith(build)}>Load</td>
                                                     <td className={`${table_cell_details} cursor-pointer`} onClick={() => deleteItem(build._id)}>Delete</td>

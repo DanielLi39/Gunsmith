@@ -1,6 +1,7 @@
 import { signOut } from "@/auth"
  
 export function SignOutButton( {hide} ) {
+  //console.log("Sign out button hidden: ", hide);
   return (
     <form className={hide ? 'hidden' : undefined}
       action={async () => {
