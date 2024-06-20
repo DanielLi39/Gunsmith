@@ -4,6 +4,7 @@ import BuildList from "./BuildList";
 import GunBuilder from "./GunBuilder";
 import { useState, createContext } from "react";
 import loadGun from "../actions/loadGun";
+import ErrorDisplay from "./ErrorDisplay";
 
 export const UserContext = createContext(null);
 
@@ -59,7 +60,6 @@ export default function Builder( {username} ) {
     // Only activated when a build is to be displayed
     //const [edit, setEdit] = useState([false, undefined]);
 
-    // TO-DO: Author should be inherited from context once logged in
     // Parameters holds the attachment and blocked type lists, as well as the gunsmith's build details
     // All edits should be bundled into one
     const initialParameters = {
@@ -75,6 +75,10 @@ export default function Builder( {username} ) {
     };
 
     const [parameters, setParameters] = useState(initialParameters);
+
+    //Used to toggle error modals when something goes wrong
+    const [err, setErr] = useState({error: false, message: ''});
+
     /*
      * queryGun will load in a base gun into the gun builder
      * @param gunName - The gun's name
@@ -94,8 +98,6 @@ export default function Builder( {username} ) {
             }
             
             setData(result.data);
-            //setAttachments([...newAttachments]);
-            //setBlocks([...blockList]);
             setParameters({
                 name: '',
                 gunName: gunName,
@@ -106,7 +108,7 @@ export default function Builder( {username} ) {
                 public: false
             });
         } else {
-            console.log(result.error);
+            setErr({error: true, message: result.error});
         }
     }
 
@@ -134,9 +136,6 @@ export default function Builder( {username} ) {
             }
             
             setData(result.data);
-            //setAttachments([...newAttachments]);
-            //setBlocks([...blockList]);
-            //setEdit([true, id]);
             setParameters({
                 id: build._id,
                 name: build.name,
@@ -149,7 +148,7 @@ export default function Builder( {username} ) {
                 public: false
             });
         } else {
-            console.log(result.error);
+            setErr({error: true, message: result.error});
         }
     }
 
@@ -159,7 +158,7 @@ export default function Builder( {username} ) {
     */
     async function receiveData(gun) {
         if (gun === null) {
-            //console.log("Gun name is null");
+            setErr({error: true, message: "Could not find gun in database! Missing entry in database."});
             setData(null);
         } else {
             const result = await loadGun(gun.name);
@@ -179,27 +178,10 @@ export default function Builder( {username} ) {
                     blocks: newBlocks
                 });
             } else {
-                console.log(result);
+                setErr({error: true, message: result.error});
             }
         }
     }
-
-    /*
-     * resetAttachments will reset attachments to the initial state of the gun
-     * @param attachments - list of attachments to reset to
-    */
-    // function resetAttachments(attachments) {
-    //     setAttachments([...attachments]);
-    //     setParameters({...parameters, attachments: []});
-
-    //     var newBlocks = [];
-    //     for (const attachment of attachments) {
-    //         if (attachment.blocking) {
-    //             newBlocks = newBlocks.concat(attachment.blocks);
-    //         }
-    //     }
-    //     setBlocks(newBlocks);
-    // }
 
     /*
      * Attempt to add the attachment to the attachmentList
@@ -220,8 +202,7 @@ export default function Builder( {username} ) {
         const typeIndex = parameters.attachments.findIndex((element) => element.type === attachmentType);
 
         if ((typeIndex == -1 && parameters.attachments.length == 5) || parameters.blocks.indexOf(attachmentType) > -1) {
-            console.log("Attachment list full or a current attachment would be blocked!");
-            //Raise some error div and don't set any state
+            setErr({error: true, message: "Attachments full or a current attachment would be blocked!"});
             return false;
         }
 
@@ -229,8 +210,7 @@ export default function Builder( {username} ) {
             const blockingIndex = parameters.attachments.findIndex(attachment => newAttachment.blocks.indexOf(attachment.type) > -1);
 
             if (blockingIndex > -1) {
-                console.log(`Attachment ${newAttachment.name} would block ${parameters.attachments[blockingIndex].name}!`);
-                //Raise some error div and don't set any state
+                setErr({error: true, message: `Attachment ${newAttachment.name} would block ${parameters.attachments[blockingIndex].name}!`});
                 return false;
             }
         }
@@ -243,7 +223,7 @@ export default function Builder( {username} ) {
             const attachment = data.attachments[attachmentType].find((element) => element.name === parameters.attachments[typeIndex].name);
             if (attachment === undefined) {
                 //This should never happen unless the attachment state is out of sync with the database
-                console.log("ERROR: THIS SHOULD NEVER HAPPEN?");
+                setErr({error: true, message: "Attachment state is out of sync with database! This should never happen."});
                 return false;
             }
             console.log(`Attachment type already exists!! Replacing ${parameters.attachments[typeIndex].type} with ${newAttachment.name}`);
@@ -294,35 +274,10 @@ export default function Builder( {username} ) {
             blocks: newBlocks
         });
     }
-
-    /*
-     * addBlocks will concatenate blocks with block
-     * @param blockList - an array of strings that specifies the blocked categories to add
-    */
-    // function addBlocks(blockList) {
-    //     setBlocks([...blocks, ...blockList]);
-    // }
-
-    /*
-     * removeBlocks will remove one instance of blockList from blocks
-     * @param blockList - an array of strings that specifies the blocked categories to remove
-    */
-    // function removeBlocks(blockList) {
-    //     console.log("Trying to remove", blockList);
-
-    //     var newBlocks = [...blocks];
-    //     for (const block of blockList) {
-    //         const place = newBlocks.indexOf(block);
-    //         if (place === -1) continue;
-    //         newBlocks.splice(place, 1);
-    //         console.log(newBlocks);
-    //     }
-    //     console.log(newBlocks);
-    //     setBlocks(newBlocks);
-    // }
     
     return (
         <UserContext.Provider value={username}>
+            <ErrorDisplay err={err} setErr={setErr}/>
             <GunBuilder data={data} parameters={parameters}
                         setParameters={setParameters} receiveData={receiveData}
                         addAttachment={addAttachment} removeAttachment={removeAttachment}/>

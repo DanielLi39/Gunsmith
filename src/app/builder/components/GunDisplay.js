@@ -6,7 +6,6 @@ import editBuild from "../actions/editBuild";
 import { UserContext } from "./Builder";
 import { useContext } from "react";
 
-//TO-DO Replace Author field as it should be inherited from context once logged in
 export default function GunDisplay( {isOpen, parameters, setParameters} ) {
     const username = useContext(UserContext);
     const display_details = 'grow';
@@ -35,7 +34,7 @@ export default function GunDisplay( {isOpen, parameters, setParameters} ) {
                     </div>
                     <input className={`bg-stone-600 rounded-md min-w-72 text-pretty text-center border-2 border-neutral-950 text-semibold text-red-100 placeholder-red-100
                                            cursor-not-allowed`}
-                                name="author" value={username} disabled="true"/>
+                                name="author" value={username} disabled={true}/>
                     <label className="text-red-100 flex flex-row items-center">
                             Save as public build:
                             <input type="checkbox" name="public" checked={parameters.public} onChange={(e) => setParameters({...parameters, public: e.target.checked})}/>
