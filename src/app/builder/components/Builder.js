@@ -107,6 +107,7 @@ export default function Builder( {username} ) {
             setParameters({
                 name: '',
                 gunName: gunName,
+                camo: '',
                 attachments: [...newAttachments],
                 blocks: {...blockList},
                 base: result.data.conversion ? result.data.base : undefined,
@@ -153,18 +154,20 @@ export default function Builder( {username} ) {
                 }
 
                 newAttachments.push({...exist, type: key});
-                if (exist.hasOwnProperty('incompatible')) {
+                if (!!(exist.incompatible?.hasOwnProperty(key))) {
                     //Override the factory incompatibilities if attachment exists
-                    blockList[key] = [...exist.incompatible];
+                    blockList[key] = [...exist.incompatible[key]];
                 }
             }
             
+            console.log(build, (!build.camo ? '' : build.camo));
+
             setData(result.data);
             setParameters({
                 id: build._id,
                 name: build.name,
                 gunName: build.gunName,
-                camo: build.camo,
+                camo: !build.camo ? '' : build.camo,
                 base: result.data.conversion ? result.data.base : undefined,
                 attachments: newAttachments,
                 blocks: blockList,
@@ -259,12 +262,6 @@ export default function Builder( {username} ) {
 
         //If type already exists, remove the old attachment and blocked types
         if (typeIndex !== -1) {
-            // const attachment = data.attachments[attachmentType].find((element) => element.name === parameters.attachments[typeIndex].name);
-            // if (attachment === undefined) {
-            //     //This should never happen unless the attachment state is out of sync with the database
-            //     setErr({error: true, message: "Attachment state is out of sync with database! This should never happen."});
-            //     return false;
-            // }
             console.log(`Attachment type already exists!! Replacing ${parameters.attachments[typeIndex].name} with ${newAttachment.name}`);
             
             newAttachments = newAttachments.filter(currentAttachment => currentAttachment.name !== parameters.attachments[typeIndex].name);

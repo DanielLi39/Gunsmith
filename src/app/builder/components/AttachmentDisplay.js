@@ -78,7 +78,7 @@ function AttachmentCategory( {name, items, addAttachment, removeAttachment, firs
     console.log("All type found!", incompatible);
     attachments = [];
   }
-  console.log(name, attachments);
+  //console.log(name, attachments);
 
   const isBlocked = attachments.length === 0;
   //This is run during rendering to position the dropup div so that it does not overflow out of the screen
