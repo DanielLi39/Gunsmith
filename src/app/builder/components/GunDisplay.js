@@ -6,13 +6,18 @@ import editBuild from "../actions/editBuild";
 import { UserContext } from "./Builder";
 import { useContext } from "react";
 
-export default function GunDisplay( {isOpen, parameters, setParameters} ) {
+export default function GunDisplay( {isOpen, parameters, setParameters, setErr} ) {
     const username = useContext(UserContext);
     const display_details = 'grow';
     //const attachmentNames = parameters.attachments.map(attachment => attachment.name);
     const imagePath = `/guns/${parameters.gunName === '' ? 'blank' : parameters.gunName.replaceAll(' ', '_')}.png`;
     const input_details = `bg-stone-600 rounded-md min-w-72 text-pretty border-2 border-neutral-950 text-semibold text-red-100 placeholder-red-100
                            focus:text-neutral-800 focus:placeholder-neutral-800 focus:outline-none focus:bg-red-100`;
+
+
+    function createBuild() {
+        
+    }
 
     return (
         <div className={`${display_details} ${isOpen ? '' : 'hidden'} justify-center`}>
