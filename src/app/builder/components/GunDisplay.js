@@ -43,6 +43,16 @@ export default function GunDisplay( {isOpen, parameters, setParameters, setErr} 
         }
     }
 
+    async function updateBuild() {
+        const result = await editBuild(parameters);
+
+        if (result.success) {
+            setErr({alert: true, message: 'Build successfully edited!'});
+        } else {
+            setErr({error: true, message: result.error});
+        }
+    }
+
     return (
         <div className={`${display_details} ${isOpen ? '' : 'hidden'} justify-center`}>
             <div className="mt-5 flex flex-col items-center justify-center">
@@ -73,7 +83,7 @@ export default function GunDisplay( {isOpen, parameters, setParameters, setErr} 
                                 className={`${!enable && 'cursor-not-allowed'} rounded-md py-1 px-3 bg-red-800/75 border-2 border-white w-32 text-red-100 text-semibold`}>
                             Save build
                         </button>
-                        <button type="button" onClick={() => editBuild(parameters)}
+                        <button type="button" onClick={() => updateBuild()}
                                 className={`${!parameters.edit && 'hidden'} rounded-md py-1 px-3 bg-red-800/75 border-2 border-white w-32 text-red-100 text-semibold`}>
                             Edit build
                         </button>

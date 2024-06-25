@@ -65,9 +65,10 @@ async function _writeBuild(client, data) {
     console.log(data);
     
     //Check if build already exists
-    const exists = await client.db("mw3_gunbuilds").collection('builds').findOne({...data, public: true});
-    
-    if (!exists) {
+    //console.log(data, {...data, attachments: {$all: data.attachments}});
+    const exists = await client.db("mw3_gunbuilds").collection('builds').findOne({...data, attachments: {$all: data.attachments}});
+    console.log(exists);
+    if (!!exists) {
         return undefined;
     }
     const result = await client.db("mw3_gunbuilds").collection('builds').insertOne(data);

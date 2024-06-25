@@ -144,25 +144,31 @@ export default function Builder( {username} ) {
 
             //Iterate through all 
             for (const key of Object.keys(result.data.attachments)) {
-                
-                if (result.data.hasOwnProperty('incompatible') && result.data.incompatible.hasOwnProperty(key)) {
-                    blockList[key] = [...result.data.incompatible[key]];
-                }
 
                 const exist = result.data.attachments[key].find(attachment => build.attachments.indexOf(attachment.name) > -1);
                 if (exist === undefined) {
                     console.log(`Attachment could not be found in category ${key}`);
                     continue;
                 }
-
+                console.log(exist);
                 newAttachments.push({...exist, type: key});
-                if (!!(exist.incompatible?.hasOwnProperty(key))) {
-                    //Override the factory incompatibilities if attachment exists
-                    blockList[key] = [...exist.incompatible[key]];
+                if (exist.hasOwnProperty('incompatible')) {
+                    for (const [type, incompatibilities] of Object.entries(exist.incompatible)) {
+                        blockList[type] = blockList.hasOwnProperty(type) ? [...blockList[type], ...incompatibilities] : [...incompatibilities];
+                    }
+                }
+            }
+
+            if (result.data.hasOwnProperty('incompatible')) {
+                //Check for any 0 length or nonexistent block types and add factory incompatibilities on there
+                for (const [type, incompatibilities] of Object.entries(result.data.conversion_kit.incompatible)) {
+                    if (!(blockList[type]?.length)) {
+                        blockList[type] = [...incompatibilities];
+                    }
                 }
             }
             
-            console.log(build, (!build.camo ? '' : build.camo));
+            console.log(blockList);
 
             setData(result.data);
             setParameters({
