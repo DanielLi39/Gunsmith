@@ -72,7 +72,7 @@ export default function Builder( {username} ) {
         public: false
     };
 
-    const [builds, setBuilds] = useState([]);
+    //const [builds, setBuilds] = useState([]);
 
     const [parameters, setParameters] = useState(initialParameters);
 
@@ -362,7 +362,7 @@ export default function Builder( {username} ) {
             <GunBuilder data={data} parameters={parameters}
                         setParameters={setParameters} receiveData={receiveData} setErr={setErr}
                         addAttachment={addAttachment} removeAttachment={removeAttachment}/>
-            <BuildList sendBuildToGunsmith={queryBuild} sendGunToGunsmith={queryGun} builds={builds} setBuilds={setBuilds}/>
+            <BuildList sendBuildToGunsmith={queryBuild} sendGunToGunsmith={queryGun}/>
         </UserContext.Provider>
     );
 }

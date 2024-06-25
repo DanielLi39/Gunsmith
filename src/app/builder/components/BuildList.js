@@ -6,7 +6,7 @@ import deleteBuild from "../actions/deleteBuild";
 import queryGuns from "../actions/queryGuns";
 import { UserContext } from "./Builder";
 
-export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith, builds, setBuilds} ) {
+export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith} ) {
     const user = useContext(UserContext);
     //The author will be inherited from a context once logged in - TODO
     const initialParameters = 
@@ -36,7 +36,7 @@ export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith, buil
 
     const previousQuery = useRef(initialParameters);
     
-    //const [builds, setBuilds] = useState([]);
+    const [builds, setBuilds] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     //SearchType is true to search for custom builds, false to search in established gun list
     const [searchType, setSearchType] = useState(true);

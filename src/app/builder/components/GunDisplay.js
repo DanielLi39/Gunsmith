@@ -4,7 +4,7 @@ import Image from "next/image";
 import writeBuild from "../actions/writeBuild";
 import editBuild from "../actions/editBuild";
 import { UserContext } from "./Builder";
-import { useContext, useState, useTransition } from "react";
+import { useContext, useState } from "react";
 
 export default function GunDisplay( {isOpen, parameters, setParameters, setErr} ) {
     const username = useContext(UserContext);
