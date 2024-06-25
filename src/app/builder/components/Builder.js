@@ -4,7 +4,7 @@ import BuildList from "./BuildList";
 import GunBuilder from "./GunBuilder";
 import { useState, createContext } from "react";
 import loadGun from "../actions/loadGun";
-import ErrorDisplay from "./ErrorDisplay";
+import NoteDisplay from "./NotificationDisplay";
 
 export const UserContext = createContext(null);
 
@@ -63,6 +63,7 @@ export default function Builder( {username} ) {
         id: undefined,
         name: '',
         gunName: '',
+        author: username,
         camo: '',
         base: undefined,
         attachments: [],        //An array of attachment objects: [{name: string, type: string, aftermarket: boolean, incompatible: [string]}]
@@ -105,6 +106,7 @@ export default function Builder( {username} ) {
             
             setData(result.data);
             setParameters({
+                ...parameters,
                 name: '',
                 gunName: gunName,
                 camo: '',
@@ -164,6 +166,7 @@ export default function Builder( {username} ) {
 
             setData(result.data);
             setParameters({
+                ...parameters,
                 id: build._id,
                 name: build.name,
                 gunName: build.gunName,
@@ -347,9 +350,9 @@ export default function Builder( {username} ) {
     
     return (
         <UserContext.Provider value={username}>
-            <ErrorDisplay err={err} setErr={setErr}/>
+            <NoteDisplay err={err} setErr={setErr}/>
             <GunBuilder data={data} parameters={parameters}
-                        setParameters={setParameters} receiveData={receiveData}
+                        setParameters={setParameters} receiveData={receiveData} setErr={setErr}
                         addAttachment={addAttachment} removeAttachment={removeAttachment}/>
             <BuildList sendBuildToGunsmith={queryBuild} sendGunToGunsmith={queryGun}/>
         </UserContext.Provider>

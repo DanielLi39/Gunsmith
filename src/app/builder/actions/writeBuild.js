@@ -49,31 +49,11 @@ async function connect(data) {
 */
 export default async function writeBuild(parameters) {
     const data = {};
-    //var first = true;
-    console.log(parameters);
-    // for (const pair of parameters.entries()) {
-    //     console.log(pair);
-    //     if (!first) {
-    //         if (pair[0] === 'attachments') {
-    //             if (pair[1] === '') {
-    //                 data.push([pair[0], []]);
-    //             } else {
-    //                 data.push([pair[0], pair[1].split(',')]);
-    //             }
-    //         } else if (pair[0] === 'public') {
-    //             data.push([pair[0], (pair[1] === 'on' ? true : false)])
-    //         } else {
-    //             data.push([pair[0], pair[1]]);
-    //         }
-    //     } else {
-    //         first = false;
-    //     }
-    // }
 
     data.name = parameters.name;
     data.author = parameters.author;
     data.gunName = parameters.gunName;
-    data.attachments = parameters.attachments;
+    data.attachments = parameters.attachments.map(attachment => attachment.name);
     data.public = parameters.public;
 
     const result = await connect(_writeBuild, data, resultHandler, false);
@@ -84,13 +64,24 @@ export default async function writeBuild(parameters) {
 async function _writeBuild(client, data) {
     console.log(data);
     
+    //Check if build already exists
+    const exists = await client.db("mw3_gunbuilds").collection('builds').findOne({...data, public: true});
+    
+    if (!exists) {
+        return undefined;
+    }
     const result = await client.db("mw3_gunbuilds").collection('builds').insertOne(data);
     console.log(result);
     return result;
 }
 
 async function resultHandler(result) {
-    if (result.acknowledged !== true) {
+    if (!result) {
+        return {
+            success: false,
+            error: "Build already exists!"
+        };
+    } else if (result.acknowledged !== true) {
         return {
             success: false,
             error: "Something went wrong..."

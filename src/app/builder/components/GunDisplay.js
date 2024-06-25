@@ -4,7 +4,7 @@ import Image from "next/image";
 import writeBuild from "../actions/writeBuild";
 import editBuild from "../actions/editBuild";
 import { UserContext } from "./Builder";
-import { useContext } from "react";
+import { useContext, useState, useTransition } from "react";
 
 export default function GunDisplay( {isOpen, parameters, setParameters, setErr} ) {
     const username = useContext(UserContext);
@@ -14,9 +14,33 @@ export default function GunDisplay( {isOpen, parameters, setParameters, setErr} 
     const input_details = `bg-stone-600 rounded-md min-w-72 text-pretty border-2 border-neutral-950 text-semibold text-red-100 placeholder-red-100
                            focus:text-neutral-800 focus:placeholder-neutral-800 focus:outline-none focus:bg-red-100`;
 
+    const [enable, setEnable] = useState(true);
 
-    function createBuild() {
-        
+    async function createBuild() {
+        if (enable) {
+            setEnable(false);
+        } else {
+            return;
+        }
+        //Check for a name
+        if (parameters.name === '') {
+            setErr({error: true, message: "Please type a name for the build!"});
+        } else {
+            
+            const result = await writeBuild(parameters);
+            console.log(result);
+
+            if (result.success) {
+                setErr({alert: true, message: `Build saved as ${parameters.name}!`});
+            } else {
+                setErr({error: true, message: result.error});
+            }
+
+            setTimeout(() => {
+                console.log("Timed out!");
+                setEnable(true);
+            }, 7500);
+        }
     }
 
     return (
@@ -45,8 +69,8 @@ export default function GunDisplay( {isOpen, parameters, setParameters, setErr} 
                             <input type="checkbox" name="public" checked={parameters.public} onChange={(e) => setParameters({...parameters, public: e.target.checked})}/>
                         </label>
                     <div className="flex flex-row justify-center">
-                        <button type="button" onClick={() => writeBuild(parameters)} 
-                                className="rounded-md py-1 px-3 bg-red-800/75 border-2 border-white w-32 text-red-100 text-semibold">
+                        <button type="button" onClick={() => createBuild()} disabled={!enable}
+                                className={`${!enable && 'cursor-not-allowed'} rounded-md py-1 px-3 bg-red-800/75 border-2 border-white w-32 text-red-100 text-semibold`}>
                             Save build
                         </button>
                         <button type="button" onClick={() => editBuild(parameters)}
