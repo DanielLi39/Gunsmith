@@ -72,6 +72,8 @@ export default function Builder( {username} ) {
         public: false
     };
 
+    const [builds, setBuilds] = useState([]);
+
     const [parameters, setParameters] = useState(initialParameters);
 
     //Used to toggle error modals when something goes wrong
@@ -360,7 +362,7 @@ export default function Builder( {username} ) {
             <GunBuilder data={data} parameters={parameters}
                         setParameters={setParameters} receiveData={receiveData} setErr={setErr}
                         addAttachment={addAttachment} removeAttachment={removeAttachment}/>
-            <BuildList sendBuildToGunsmith={queryBuild} sendGunToGunsmith={queryGun}/>
+            <BuildList sendBuildToGunsmith={queryBuild} sendGunToGunsmith={queryGun} builds={builds} setBuilds={setBuilds}/>
         </UserContext.Provider>
     );
 }

@@ -6,7 +6,7 @@ import deleteBuild from "../actions/deleteBuild";
 import queryGuns from "../actions/queryGuns";
 import { UserContext } from "./Builder";
 
-export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith} ) {
+export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith, builds, setBuilds} ) {
     const user = useContext(UserContext);
     //The author will be inherited from a context once logged in - TODO
     const initialParameters = 
@@ -36,7 +36,7 @@ export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith} ) {
 
     const previousQuery = useRef(initialParameters);
     
-    const [builds, setBuilds] = useState([]);
+    //const [builds, setBuilds] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     //SearchType is true to search for custom builds, false to search in established gun list
     const [searchType, setSearchType] = useState(true);
@@ -240,7 +240,7 @@ export default function BuildList( {sendBuildToGunsmith, sendGunToGunsmith} ) {
                                                     <td className={`${table_cell_details}`}>{build.camo}</td>
                                                     <td className={`${table_cell_details}`}>{build.attachments?.join(', ').trim()}</td>
                                                     <td className={`${table_cell_details} cursor-pointer`} onClick={() => sendBuildToGunsmith(build)}>Load</td>
-                                                    <td className={`${table_cell_details} cursor-pointer`} onClick={() => deleteItem(build._id)}>Delete</td>
+                                                    <td className={`${table_cell_details} ${user === build.author ? 'cursor-pointer' : 'cursor-not-allowed'}`} onClick={() => user === build.author ? deleteItem(build._id) : undefined}>Delete</td>
                                                 </tr>
                                             );
                                         })}
